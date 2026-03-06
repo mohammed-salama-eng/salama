@@ -20,11 +20,11 @@ async function run() {
         );
 
     const weatherData = await weatherResponse.json();
-    const alerts = weatherLogic(weatherData, "ad_dabbah_Northern");
+    const alerts = weatherLogic(weatherData, "ad_dabbah_northern");
 
     for (const alert of alerts) {
         await messaging.send({
-            topic: "ad_dabbah_Northern",
+            topic: "ad_dabbah_northern",
             notification: alert
         });
 
