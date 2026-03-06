@@ -1,4 +1,4 @@
-const admin = require("Firebase-admin");
+const admin = require("firebase-admin");
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
