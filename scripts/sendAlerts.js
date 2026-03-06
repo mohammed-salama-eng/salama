@@ -22,10 +22,26 @@ async function run() {
     `&timezone=auto&wind_speed_unit=ms&forecast_days=7`
         );
 
-    const weatherData = await weatherResponse.json();
-    const alerts = weatherLogic(weatherData, "ad_dabbah_northern");
+    const dustResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+    `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
+    `&timezone=auto&forecast_days=3`;
+);
 
-    for (const alert of alerts) {
+    const weatherData = await weatherResponse.json();
+    const dustData = await dustResponse.json();
+    const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
+    const dustAlerts = dustLogic(weatherData, "Ad Dabbah Northern");
+
+    for (const alert of weatherAlerts) {
+        await messaging.send({
+            topic: "ad_dabbah_northern",
+            notification: alert
+        });
+
+    }
+    
+    for (const alert of dustAlerts) {
         await messaging.send({
             topic: "ad_dabbah_northern",
             notification: alert
