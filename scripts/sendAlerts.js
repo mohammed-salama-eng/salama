@@ -10,7 +10,7 @@ const messaging = admin.messaging();
 
 async function sendNotification() {
     await messaging.send({
-         topic: "AdDabbahNorthern",
+         topic: "ad_dabbah_northern",
          notification: {
            title: "GitHub Action Test",
            body: "This notification was sent from GitHub Actions",
