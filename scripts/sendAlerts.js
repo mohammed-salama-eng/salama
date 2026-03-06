@@ -3,7 +3,7 @@ const admin = require("Firebase-admin");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
-credential: admin.credential.cert(serviceAccount);
+credential: admin.credential.cert(serviceAccount)
 });
 
 const messaging = admin.messaging();
