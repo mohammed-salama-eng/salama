@@ -11,6 +11,9 @@ credential: admin.credential.cert(serviceAccount)
 
 const messaging = admin.messaging();
 
+const latitude = 18.0333;
+const longitude = 31.2833;
+
 async function run() {
     const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
