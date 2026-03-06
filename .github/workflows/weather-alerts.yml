@@ -25,6 +25,10 @@ jobs:
 
       - name: Run alerts scripts
         run: node scripts/sendAlerts.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+        
 
 
 
