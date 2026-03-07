@@ -29,6 +29,8 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (apparent_temperature_max[i] > APPARENT_HEATWAVE_THRESHOLD) {
       consecutive++;
+      const date = new Date(time[i]);
+
     } else {
       consecutive = 0;
     }
@@ -45,7 +47,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       });
@@ -60,6 +62,8 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (apparent_temperature_min[i] < APPARENT_COLDWAVE_THRESHOLD) {
       consecutive++;
+      const date = new Date(time[i]);
+
     } else {
       consecutive = 0;
     }
@@ -76,7 +80,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/coldwaves"
       });
@@ -87,6 +91,8 @@ module.exports = function processWeatherData(data, locationName) {
   for (let i = 0; i < time.length; i++) {
 
     if (precipitation_sum[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
+          const date = new Date(time[i]);
+
       alerts.push({
         notification: {
         title: "Heavy Rain Warning",
@@ -98,7 +104,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/rains",
       
@@ -107,6 +113,8 @@ module.exports = function processWeatherData(data, locationName) {
     }
 
     if (uv_index_max[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
+          const date = new Date(time[i]);
+
       alerts.push({
         notification: {
           
@@ -119,7 +127,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       
@@ -132,6 +140,7 @@ module.exports = function processWeatherData(data, locationName) {
       wind_gusts_10m_max && wind_gusts_10m_max[i] > GUST_WIND_THRESHOLD;
 
     if (strongWind && !added.has("wind")) {
+      const date = new Date(time[i]);
 
       alerts.push({
         notification: {
@@ -144,7 +153,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/sandstorms",
       
@@ -162,6 +171,7 @@ module.exports = function processWeatherData(data, locationName) {
       humidity.reduce((sum, v) => sum + v, 0) / humidity.length;
 
     if (avg > HIGH_HUMIDITY_THRESHOLD && !added.has("humidity")) {
+        const date = new Date(time[i]);
 
       alerts.push({
         notification: {
@@ -175,7 +185,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: date,
         urgency: "high",
         articleUrl: "/articles/humidity",
       
