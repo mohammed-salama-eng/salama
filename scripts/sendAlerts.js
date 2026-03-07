@@ -60,7 +60,7 @@ async function run() {
                icon: alert.icon,
                articleUrl: alert.articleUrl,
                showMore: alert.showMore,
-               createdAt: db.FiledValue.serverTimestamp(),
+               createdAt: Date.now(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
            }, { merge: true });
 
