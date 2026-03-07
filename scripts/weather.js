@@ -118,7 +118,7 @@ module.exports = function processWeatherData(data, locationName) {
 
       alerts.push({
         title: strongGust ? "Strong Wind Alert 💨" : "Wind Advisory 💨",
-        body: "Strong winds expected in ${locationName}.",
+        body: "Strong winds expected in your location.",
         icon: "air",
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
