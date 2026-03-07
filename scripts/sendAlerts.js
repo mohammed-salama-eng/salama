@@ -52,7 +52,6 @@ async function run() {
        const alertId = `${locality}_${alert.type}_{Date.now()}`;
        await db.collection("alerts").doc(alertId).set({
                localion: locality,
-               type: alert.type,
                title: alert.title,
                description: alert.body,
                time: alert.time,
