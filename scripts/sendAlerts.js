@@ -42,7 +42,7 @@ async function run() {
         // Push notifications
         await messaging.send({
             topic: locality,
-            notification: notification
+            notification: alert.notification
         });
 
        // Store alert to database
