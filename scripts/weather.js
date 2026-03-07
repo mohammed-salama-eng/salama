@@ -29,13 +29,14 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (apparent_temperature_max[i] > APPARENT_HEATWAVE_THRESHOLD) {
       consecutive++;
-      const date = new Date(time[i]);
 
     } else {
       consecutive = 0;
     }
 
     if (consecutive >= 3 && !added.has("heatwave")) {
+      const date = new Date(time[i]);
+      
       alerts.push({
         notification: {
         title: "Heatwave Alert",
@@ -62,13 +63,14 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (apparent_temperature_min[i] < APPARENT_COLDWAVE_THRESHOLD) {
       consecutive++;
-      const date = new Date(time[i]);
 
     } else {
       consecutive = 0;
     }
 
     if (consecutive >= 3 && !added.has("coldwave")) {
+      const date = new Date(time[i]);
+      
       alerts.push({
         notification: {
         title: "Coldwave Alert ❄️",
