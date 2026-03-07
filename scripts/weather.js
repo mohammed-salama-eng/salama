@@ -35,8 +35,12 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (consecutive >= 3 && !added.has("heatwave")) {
       alerts.push({
+        notification: {
         title: "Heatwave Alert",
         body: "Extreme heat expected in your location for multiple days.",
+        },
+        title: "alerts.heatwave.title",
+        description: "alerts.heatwave.description",
         icon: "wb_sunny",
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
@@ -62,8 +66,12 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (consecutive >= 3 && !added.has("coldwave")) {
       alerts.push({
+        notification: {
         title: "Coldwave Alert ❄️",
         body: "Cold conditions expected in your location.",
+        },
+        title: "alerts.coldwave.title",
+        description: "alerts.coldwave.description",
         icon: "ac_unit",
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
@@ -80,8 +88,12 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (precipitation_sum[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
       alerts.push({
+        notification: {
         title: "Heavy Rain Warning",
         body: "Heavy rainfall expected in your location.",
+        },
+        title: "alerts.rainAlert.title",
+        description: "alerts.rainAlert.description",
         icon: "rainy",
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
@@ -96,8 +108,13 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (uv_index_max[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
       alerts.push({
+        notification: {
+          
         title: "Extreme UV Warning",
         body: "Very high UV index expected in your location.",
+        },
+        title: "alerts.uvIndex.title",
+        description: "alerts.uvIndex.description",
         icon: "flare",
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
@@ -117,8 +134,12 @@ module.exports = function processWeatherData(data, locationName) {
     if (strongWind && !added.has("wind")) {
 
       alerts.push({
+        notification: {
         title: strongGust ? "Strong Wind Alert 💨" : "Wind Advisory 💨",
         body: "Strong winds expected in your location.",
+        },
+        title: "alerts.strongWind.title",
+        description: "alerts.strongWind.description",
         icon: "air",
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
@@ -143,8 +164,13 @@ module.exports = function processWeatherData(data, locationName) {
     if (avg > HIGH_HUMIDITY_THRESHOLD && !added.has("humidity")) {
 
       alerts.push({
+        notification: {
         title: "High Humidity Warning 💧",
         body: "Very humid conditions expected in your location.",
+        },
+        
+        title: "alerts.highHumidity.title",
+        description: "alerts.highHumidity.description",
         icon: "water_drop",
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
