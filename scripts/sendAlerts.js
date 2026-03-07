@@ -42,10 +42,7 @@ async function run() {
         // Push notifications
         await messaging.send({
             topic: locality,
-            notification: {
-                title: alert.title,
-                body: alert.body
-            }
+            notification: notification
         });
 
        // Store alert to database
@@ -53,12 +50,13 @@ async function run() {
        await db.collection("alerts").doc(alertId).set({
                localion: locality,
                title: alert.title,
-               description: alert.body,
+               description: alert.description,
                time: alert.time,
                urgency: alert.urgency,
                icon: alert.icon,
                articleUrl: alert.articleUrl,
                showMore: alert.showMore,
+               issuer: alert.issuer,
                createdAt: Date.now(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
            }, { merge: true });
