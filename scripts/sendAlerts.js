@@ -48,11 +48,15 @@ async function run() {
        // Store alert to database
        const alertId = `${locality}_${alert.type}_{Date.now()}`;
        await dB.collection("alerts").doc(alertId).set({
-               locality: locality,
+               localion: locality,
                type: alert.type,
                title: alert.title,
                description: alert.body,
+               time: alert.time,
                urgency: alert.urgency,
+               icon: alert.icon,
+               articleUrl: alert.articleUrl,
+               showMore: alert.showMore,
                createdAt: dB.FiledValue.serverTimestamp(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
 
