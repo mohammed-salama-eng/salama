@@ -30,7 +30,7 @@ async function run() {
     const dustResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
-    `&timezone=auto&forecast_days=3`;
+    `&timezone=auto&forecast_days=3`
 );
 
     const weatherData = await weatherResponse.json();
