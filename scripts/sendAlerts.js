@@ -1,18 +1,23 @@
 const admin = require("firebase-admin");
+
 const weatherLogic = require("./weather");
 const dustLogic = require("./dust_storms");
 
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
+
 admin.initializeApp({
 credential: admin.credential.cert(serviceAccount)
 });
 
 const messaging = admin.messaging();
+const db = admin.firestore();
 
 const latitude = 18.0333;
 const longitude = 31.2833;
+const locality = "ad_dabbah_northern";
+
 
 async function run() {
     const weatherResponse = await fetch(
@@ -34,16 +39,31 @@ async function run() {
     const dustAlerts = dustLogic(weatherData, "Ad Dabbah Northern");
 
     for (const alert of weatherAlerts) {
+        // Push notifications
         await messaging.send({
-            topic: "ad_dabbah_northern",
+            topic: locality,
             notification: alert
         });
+
+       // Store alert to database
+       const alertId = `${locality}_${alert.type}_{Date.now()}`;
+       await dB.collection("alerts").doc(alertId).set({
+               locality: locality,
+               type: alert.type,
+               title: alert.title,
+               description: alert.body,
+               urgency: alert.urgency,
+               createdAt: dB.FiledValue.serverTimestamp(),
+               expiresAt: Date.now() + 24 * 60 * 60 * 1000
+
+
+           });
 
     }
     
     for (const alert of dustAlerts) {
         await messaging.send({
-            topic: "ad_dabbah_northern",
+            topic: locality,
             notification: alert
         });
 
