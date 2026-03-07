@@ -36,7 +36,7 @@ async function run() {
     const weatherData = await weatherResponse.json();
     const dustData = await dustResponse.json();
     const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
-    const dustAlerts = dustLogic(weatherData, "Ad Dabbah Northern");
+    const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
 
     for (const alert of weatherAlerts) {
         // Push notifications
@@ -65,10 +65,10 @@ async function run() {
 
     }
     
-    for (const alert of dustAlerts) {
+    if(dustAlert) {
         await messaging.send({
             topic: locality,
-            notification: alert
+            notification: dustAlert
         });
 
     }
