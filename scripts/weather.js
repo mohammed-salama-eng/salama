@@ -35,8 +35,15 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (consecutive >= 3 && !added.has("heatwave")) {
       alerts.push({
-        title: "Heatwave Alert 🔥",
-        body: `Extreme heat expected in ${locationName} for multiple days.`
+        title: "Heatwave Alert",
+        body: "Extreme heat expected in your location for multiple days.",
+        icon: "wb_sunny",
+        issuer: "alerts.heatwave.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/heatwaves",
       });
       added.add("heatwave");
     }
@@ -56,7 +63,14 @@ module.exports = function processWeatherData(data, locationName) {
     if (consecutive >= 3 && !added.has("coldwave")) {
       alerts.push({
         title: "Coldwave Alert ❄️",
-        body: `Cold conditions expected in ${locationName}.`
+        body: "Cold conditions expected in your location.",
+        icon: "ac_unit",
+        issuer: "alerts.coldwave.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/coldwaves"
       });
       added.add("coldwave");
     }
@@ -66,16 +80,32 @@ module.exports = function processWeatherData(data, locationName) {
 
     if (precipitation_sum[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
       alerts.push({
-        title: "Heavy Rain Warning 🌧️",
-        body: `Heavy rainfall expected in ${locationName}.`
+        title: "Heavy Rain Warning",
+        body: "Heavy rainfall expected in your location.",
+        icon: "rainy",
+        issuer: "alerts.rainAlert.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/rains",
+      
       });
       added.add("rain");
     }
 
     if (uv_index_max[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
       alerts.push({
-        title: "Extreme UV Warning ☀️",
-        body: `Very high UV index expected in ${locationName}.`
+        title: "Extreme UV Warning",
+        body: "Very high UV index expected in your location.",
+        icon: "flare",
+        issuer: "alerts.uvIndex.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/heatwaves",
+      
       });
       added.add("uv");
     }
@@ -88,7 +118,15 @@ module.exports = function processWeatherData(data, locationName) {
 
       alerts.push({
         title: strongGust ? "Strong Wind Alert 💨" : "Wind Advisory 💨",
-        body: `Strong winds expected in ${locationName}.`
+        body: "Strong winds expected in ${locationName}.",
+        icon: "air",
+        issuer: "alerts.strongWind.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/sandstorms",
+      
       });
 
       added.add("wind");
@@ -106,7 +144,15 @@ module.exports = function processWeatherData(data, locationName) {
 
       alerts.push({
         title: "High Humidity Warning 💧",
-        body: `Very humid conditions expected in ${locationName}.`
+        body: "Very humid conditions expected in your location.",
+        icon: "water_drop",
+        issuer: "alerts.highHumidity.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "high",
+        articleUrl: "/articles/humidity",
+      
       });
 
       added.add("humidity");
