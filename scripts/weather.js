@@ -60,7 +60,7 @@ module.exports = function processWeatherData(data, locationName) {
 
   for (let i = 0; i < time.length; i++) {
 
-    if (apparent_temperaturen[i] < APPARENT_COLDWAVE_THRESHOLD) {
+    if (apparent_temperature[i] < APPARENT_COLDWAVE_THRESHOLD) {
       consecutive++;
 
     } else {
@@ -112,7 +112,6 @@ module.exports = function processWeatherData(data, locationName) {
     }
 
     if (uv_index[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
-          const date = new Date(time[i]);
 
       alerts.push({
         notification: {
