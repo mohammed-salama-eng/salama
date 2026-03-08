@@ -46,7 +46,7 @@ async function run() {
         });
 
        // Store alert to database
-       const alertId = `${locality}_${alert.type}_{Date.now()}`;
+       const alertId = `${locality}_${alert.type}_${Date.now()}`;
        await db.collection("alerts").doc(alertId).set({
                location: locality,
                title: alert.title,
