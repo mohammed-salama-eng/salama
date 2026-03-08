@@ -142,7 +142,7 @@ module.exports = function processWeatherData(data, locationName) {
       wind_gusts_10m_max && wind_gusts_10m_max[i] > GUST_WIND_THRESHOLD;
 
     if (strongWind && !added.has("wind")) {
-      const date = new Date(time[i]);
+      const hour = new Date(time[i]).getHours();
 
       alerts.push({
         notification: {
