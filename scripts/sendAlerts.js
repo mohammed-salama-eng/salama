@@ -49,7 +49,7 @@ async function run() {
         issuer: "alerts.noAlert.issuer",
         showMore: "alerts.showMore",
         location: locality,
-        time: "alerts.noAlert.time",,
+        time: "alerts.noAlert.time",
         urgency: "none",
     articleUrl: [
       "/articles/cholera",
