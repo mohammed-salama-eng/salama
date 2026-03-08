@@ -35,7 +35,6 @@ module.exports = function processWeatherData(data, locationName) {
     }
 
     if (consecutive >= 3 && !added.has("heatwave")) {
-      const date = new Date(time[i]);
       
       alerts.push({
         notification: {
@@ -48,7 +47,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: date,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       });
@@ -69,7 +68,6 @@ module.exports = function processWeatherData(data, locationName) {
     }
 
     if (consecutive >= 3 && !added.has("coldwave")) {
-      const date = new Date(time[i]);
       
       alerts.push({
         notification: {
@@ -82,7 +80,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: date,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/coldwaves"
       });
@@ -93,7 +91,6 @@ module.exports = function processWeatherData(data, locationName) {
   for (let i = 0; i < time.length; i++) {
 
     if (precipitation[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
-          const date = new Date(time[i]);
 
       alerts.push({
         notification: {
@@ -106,7 +103,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: date,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/rains",
       
@@ -129,7 +126,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: date,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       
@@ -155,7 +152,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/sandstorms",
       
@@ -187,7 +184,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time,
+        time: time[i],
         urgency: "high",
         articleUrl: "/articles/humidity",
       
