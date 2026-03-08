@@ -22,8 +22,8 @@ const locality = "ad_dabbah_northern";
 async function run() {
     const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&dhourly=apparent_temperature_max,apparent_temperature_min,precipitation,uv_index,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,dew_point_2m,visibility,temperature_2m,shortwave_radiation` +
-    `&timezone=auto&wind_speed_unit=ms&forecast_days=7`
+    `&dhourly=apparent_temperature,precipitation,uv_index,wind_speed_10m,wind_gusts_10m,relative_humidity_2m` +
+    `&timezone=auto&wind_speed_unit=ms&forecast_days=3`
         );
 
     const dustResponse = await fetch(
