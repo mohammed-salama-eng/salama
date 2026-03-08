@@ -190,40 +190,7 @@ module.exports = function processWeatherData(data, locationName) {
 
       added.add("humidity");
     }
-  }
-
-  if (alerts.length <= 0) {
-    alerts.push({
-        notification: {null},
-        title: "alerts.noAlert.title",
-        description: "alerts.noAlert.description",
-        type: "noAlert",
-        icon: "check_circle",
-        issuer: "alerts.noAlert.issuer",
-        showMore: "alerts.showMore",
-        location: locationName,
-        time: time,
-        urgency: "none",
-    articleUrl: [
-      "/articles/cholera",
-      "/articles/coldwave",
-      "/articles/dehydration",
-      "/articles/fire",
-      "/articles/floods",
-      "/articles/heatwaves",
-      "/articles/humidity",
-      "/articles/malaria",
-      "/articles/nile",
-      "/articles/power",
-      "/articles/rains",
-      "/articles/sandstorms",
-      "/articles/scorpions",
-      "/articles/snakes",
-    ][Math.floor(Math.random() * 14)],
-      
-      });
-
-    
+  
   }
   
   return alerts;
