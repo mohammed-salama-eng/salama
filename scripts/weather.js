@@ -156,6 +156,7 @@ module.exports = function processWeatherData(data, locationName) {
         showMore: "alerts.showMore",
         location: locationName,
         time: time,
+        hour: hour,
         urgency: "high",
         articleUrl: "/articles/sandstorms",
       
