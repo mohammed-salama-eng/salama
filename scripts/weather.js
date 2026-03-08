@@ -142,7 +142,6 @@ module.exports = function processWeatherData(data, locationName) {
       wind_gusts_10m_max && wind_gusts_10m_max[i] > GUST_WIND_THRESHOLD;
 
     if (strongWind && !added.has("wind")) {
-      const hour = new Date(time[i]).getHours();
 
       alerts.push({
         notification: {
@@ -156,7 +155,6 @@ module.exports = function processWeatherData(data, locationName) {
         showMore: "alerts.showMore",
         location: locationName,
         time: time,
-        hour: hour,
         urgency: "high",
         articleUrl: "/articles/sandstorms",
       
