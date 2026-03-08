@@ -14,20 +14,20 @@ module.exports = function processWeatherData(data, locationName) {
 
   const {
     time,
-    apparent_temperature_max,
-    apparent_temperature_min,
-    precipitation_sum,
-    uv_index_max,
-    wind_speed_10m_max,
-    wind_gusts_10m_max
-  } = data.daily;
+    apparent_temperature,
+    precipitation,
+    uv_index,
+    wind_speed_10m,
+    wind_gusts_10m,
+    relative_humidity_2m
+  } = data.hourly;
 
   // Heatwave detection
   let consecutive = 0;
 
   for (let i = 0; i < time.length; i++) {
 
-    if (apparent_temperature_max[i] > APPARENT_HEATWAVE_THRESHOLD) {
+    if (apparent_temperature[i] > APPARENT_HEATWAVE_THRESHOLD) {
       consecutive++;
 
     } else {
@@ -61,7 +61,7 @@ module.exports = function processWeatherData(data, locationName) {
 
   for (let i = 0; i < time.length; i++) {
 
-    if (apparent_temperature_min[i] < APPARENT_COLDWAVE_THRESHOLD) {
+    if (apparent_temperaturen[i] < APPARENT_COLDWAVE_THRESHOLD) {
       consecutive++;
 
     } else {
@@ -92,7 +92,7 @@ module.exports = function processWeatherData(data, locationName) {
 
   for (let i = 0; i < time.length; i++) {
 
-    if (precipitation_sum[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
+    if (precipitation[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
           const date = new Date(time[i]);
 
       alerts.push({
@@ -114,7 +114,7 @@ module.exports = function processWeatherData(data, locationName) {
       added.add("rain");
     }
 
-    if (uv_index_max[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
+    if (uv_index[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
           const date = new Date(time[i]);
 
       alerts.push({
@@ -137,9 +137,9 @@ module.exports = function processWeatherData(data, locationName) {
       added.add("uv");
     }
 
-    const strongWind = wind_speed_10m_max[i] > STRONG_WIND_THRESHOLD;
+    const strongWind = wind_speed_10m[i] > STRONG_WIND_THRESHOLD;
     const strongGust =
-      wind_gusts_10m_max && wind_gusts_10m_max[i] > GUST_WIND_THRESHOLD;
+      wind_gusts_10m[i] && wind_gusts_10m[i] > GUST_WIND_THRESHOLD;
 
     if (strongWind && !added.has("wind")) {
 
@@ -165,9 +165,9 @@ module.exports = function processWeatherData(data, locationName) {
     }
   }
 
-  if (data.hourly?.relative_humidity_2m) {
+  if (relative_humidity_2m) {
 
-    const humidity = data.hourly.relative_humidity_2m.slice(0, 24);
+    const humidity = relative_humidity_2m.slice(0, 24);
 
     const avg =
       humidity.reduce((sum, v) => sum + v, 0) / humidity.length;
