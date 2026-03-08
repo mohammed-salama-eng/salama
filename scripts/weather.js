@@ -47,7 +47,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       });
@@ -80,7 +80,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/coldwaves"
       });
@@ -103,7 +103,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/rains",
       
@@ -125,7 +125,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/heatwaves",
       
@@ -151,7 +151,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/sandstorms",
       
@@ -175,7 +175,6 @@ module.exports = function processWeatherData(data, locationName) {
         title: "High Humidity Warning 💧",
         body: "Very humid conditions expected in your location.",
         },
-        
         title: "alerts.highHumidity.title",
         description: "alerts.highHumidity.description",
         type: "humidity",
@@ -183,7 +182,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         articleUrl: "/articles/humidity",
       
@@ -193,5 +192,39 @@ module.exports = function processWeatherData(data, locationName) {
     }
   }
 
+  if (alerts.length <= 0) {
+    alerts.push({
+        notification: {null},
+        title: "alerts.noAlert.title",
+        description: "alerts.noAlert.description",
+        type: "noAlert",
+        icon: "check_circle",
+        issuer: "alerts.noAlert.issuer",
+        showMore: "alerts.showMore",
+        location: locationName,
+        time: time,
+        urgency: "none",
+    articleUrl: [
+      "/articles/cholera",
+      "/articles/coldwave",
+      "/articles/dehydration",
+      "/articles/fire",
+      "/articles/floods",
+      "/articles/heatwaves",
+      "/articles/humidity",
+      "/articles/malaria",
+      "/articles/nile",
+      "/articles/power",
+      "/articles/rains",
+      "/articles/sandstorms",
+      "/articles/scorpions",
+      "/articles/snakes",
+    ][Math.floor(Math.random() * 14)],
+      
+      });
+
+    
+  }
+  
   return alerts;
 };
