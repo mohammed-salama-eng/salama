@@ -52,7 +52,6 @@ async function run() {
                title: alert.title,
                description: alert.description,
                time: alert.time,
-               hour: alert.hour,
                urgency: alert.urgency,
                icon: alert.icon,
                articleUrl: alert.articleUrl,
