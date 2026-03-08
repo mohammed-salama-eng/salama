@@ -5,7 +5,7 @@ const UV_INDEX_HIGH_THRESHOLD = 9;
 const STRONG_WIND_THRESHOLD = 6;
 const GUST_WIND_THRESHOLD = 12;
 const HEAVY_RAIN_THRESHOLD = 4;
-const HIGH_HUMIDITY_THRESHOLD = 80;
+const HIGH_HUMIDITY_THRESHOLD = 0;
 
 module.exports = function processWeatherData(data, locationName) {
 
