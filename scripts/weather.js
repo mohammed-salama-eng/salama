@@ -150,6 +150,7 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: "alerts.strongWind.title",
         description: "alerts.strongWind.description",
+        type: "wind",
         icon: "air",
         issuer: "alerts.strongWind.issuer",
         showMore: "alerts.showMore",
@@ -181,6 +182,7 @@ module.exports = function processWeatherData(data, locationName) {
         
         title: "alerts.highHumidity.title",
         description: "alerts.highHumidity.description",
+        type: "humidity",
         icon: "water_drop",
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
