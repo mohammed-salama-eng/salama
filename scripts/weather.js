@@ -172,7 +172,6 @@ module.exports = function processWeatherData(data, locationName) {
       humidity.reduce((sum, v) => sum + v, 0) / humidity.length;
 
     if (avg > HIGH_HUMIDITY_THRESHOLD && !added.has("humidity")) {
-        const date = new Date(time[i]);
 
       alerts.push({
         notification: {
@@ -186,7 +185,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: date,
+        time: time,
         urgency: "high",
         articleUrl: "/articles/humidity",
       
