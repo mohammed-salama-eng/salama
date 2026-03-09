@@ -2,8 +2,8 @@ const APPARENT_HEATWAVE_THRESHOLD = 44;
 const APPARENT_COLDWAVE_THRESHOLD = 15;
 const UV_INDEX_MODERATE_THRESHOLD = 8.5;
 const UV_INDEX_HIGH_THRESHOLD = 9;
-const STRONG_WIND_THRESHOLD = 2;
-const GUST_WIND_THRESHOLD = 3;
+const STRONG_WIND_THRESHOLD = 6;
+const GUST_WIND_THRESHOLD = 12;
 const HEAVY_RAIN_THRESHOLD = 4;
 const HIGH_HUMIDITY_THRESHOLD = 80;
 
@@ -43,6 +43,7 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: "alerts.heatwave.title",
         description: "alerts.heatwave.description",
+        type: "heat",
         icon: "wb_sunny",
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
@@ -76,6 +77,7 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: "alerts.coldwave.title",
         description: "alerts.coldwave.description",
+        type: "cold",
         icon: "ac_unit",
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
@@ -99,6 +101,7 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: "alerts.rainAlert.title",
         description: "alerts.rainAlert.description",
+        type: "rain",
         icon: "rainy",
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
@@ -121,6 +124,7 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: "alerts.uvIndex.title",
         description: "alerts.uvIndex.description",
+        type: "uv",
         icon: "flare",
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
