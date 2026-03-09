@@ -44,7 +44,7 @@ async function run() {
        await db.collection("alerts").doc(alertId).set({
         title: "alerts.noAlert.title",
         description: "alerts.noAlert.description",
-        type: "noAlert",
+        alertType: "noAlert",
         icon: "check_circle",
         issuer: "alerts.noAlert.issuer",
         showMore: "alerts.showMore",
@@ -85,6 +85,7 @@ async function run() {
                location: locality,
                title: alert.title,
                description: alert.description,
+               alertType: alert.type,
                time: alert.time,
                urgency: alert.urgency,
                icon: alert.icon,
