@@ -38,7 +38,7 @@ async function run() {
     const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
 
 
-    if (weatherAlerts.length > 0 && !dustAlert) {
+    if (weatherAlerts.length <= 0 && !dustAlert) {
        const alertId = `${locality}_"noAlert_${Date.now()}`;
         
        await db.collection("alerts").doc(alertId).set({
