@@ -84,7 +84,7 @@ module.exports = function processWeatherData(data, locationName) {
         location: locationName,
         time: time,
         urgency: "high",
-        articleUrl: "/articles/coldwaves"
+        articleUrl: "/articles/coldwave"
       });
       added.add("coldwave");
     }
