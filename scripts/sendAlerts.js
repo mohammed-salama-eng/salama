@@ -39,7 +39,7 @@ async function run() {
 
 
     if (weatherAlerts.length <= 0 && !dustAlert) {
-       const alertId = `${locality}_"noAlert_${Date.now()}`;
+       const alertId = `${locality}_"noAlert`;
         
        await db.collection("alerts").doc(alertId).set({
         title: "alerts.noAlert.title",
@@ -80,7 +80,7 @@ async function run() {
         });
 
        // Store alert to database
-       const alertId = `${locality}_${alert.type}_${Date.now()}`;
+       const alertId = `${locality}_${alert.type}`;
        await db.collection("alerts").doc(alertId).set({
                location: locality,
                title: alert.title,
