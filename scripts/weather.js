@@ -1,11 +1,20 @@
 const APPARENT_HEATWAVE_THRESHOLD = 44;
-const APPARENT_COLDWAVE_THRESHOLD = 15;
-const UV_INDEX_MODERATE_THRESHOLD = 8.5;
+const APPARENT_HEATWAVE_MEDIUM = 42;
+
+const APPARENT_COLDWAVE_THRESHOLD = 12;
+const APPARENT_COLDWAVE_MEDIUM = 15;
+
 const UV_INDEX_HIGH_THRESHOLD = 9;
-const STRONG_WIND_THRESHOLD = 6;
+const UV_INDEX_MEDIUM_THRESHOLD = 8.5;
+
+const STRONG_WIND_THRESHOLD = 7;
 const GUST_WIND_THRESHOLD = 12;
+
 const HEAVY_RAIN_THRESHOLD = 4;
+const HEAVY_RAIN_MEDIUM = 2;
+
 const HIGH_HUMIDITY_THRESHOLD = 80;
+const HIGH_HUMIDITY_MEDIUM = 60;
 
 module.exports = function processWeatherData(data, locationName) {
 
@@ -27,31 +36,37 @@ module.exports = function processWeatherData(data, locationName) {
 
   for (let i = 0; i < time.length; i++) {
 
-    if (apparent_temperature[i] > APPARENT_HEATWAVE_THRESHOLD) {
+    if (apparent_temperature[i] > APPARENT_HEATWAVE_MEDIUM) {
       consecutive++;
-
     } else {
       consecutive = 0;
     }
 
     if (consecutive >= 3 && !added.has("heatwave")) {
-      
+
+      const isHigh = apparent_temperature[i] > APPARENT_HEATWAVE_THRESHOLD;
+
       alerts.push({
         notification: {
-        title: "Heatwave Alert",
-        body: "Extreme heat expected in your location for multiple days.",
+          title: "Heatwave Alert",
+          body: "Extreme heat expected in your location for multiple days.",
         },
-        title: "alerts.heatwave.title",
-        description: "alerts.heatwave.description",
+        title: isHigh
+          ? "alerts.heatwave.title"
+          : "alerts.heatwave.mediumTitle",
+        description: isHigh
+          ? "alerts.heatwave.description"
+          : "alerts.heatwave.mediumDescription",
         type: "heat",
         icon: "wb_sunny",
         issuer: "alerts.heatwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
         time: time[i],
-        urgency: "high",
+        urgency: isHigh ? "high" : "medium",
         articleUrl: "/articles/heatwaves",
       });
+
       added.add("heatwave");
     }
   }
@@ -61,108 +76,132 @@ module.exports = function processWeatherData(data, locationName) {
 
   for (let i = 0; i < time.length; i++) {
 
-    if (apparent_temperature[i] < APPARENT_COLDWAVE_THRESHOLD) {
+    if (apparent_temperature[i] < APPARENT_COLDWAVE_MEDIUM) {
       consecutive++;
-
     } else {
       consecutive = 0;
     }
 
     if (consecutive >= 3 && !added.has("coldwave")) {
-      
+
+      const isHigh = apparent_temperature[i] < APPARENT_COLDWAVE_THRESHOLD;
+
       alerts.push({
         notification: {
-        title: "Coldwave Alert ❄️",
-        body: "Cold conditions expected in your location.",
+          title: "Coldwave Alert ❄️",
+          body: "Cold conditions expected in your location.",
         },
-        title: "alerts.coldwave.title",
-        description: "alerts.coldwave.description",
+        title: isHigh
+          ? "alerts.coldwave.title"
+          : "alerts.coldwave.mediumTitle",
+        description: isHigh
+          ? "alerts.coldwave.description"
+          : "alerts.coldwave.mediumDescription",
         type: "cold",
         icon: "ac_unit",
         issuer: "alerts.coldwave.issuer",
         showMore: "alerts.showMore",
         location: locationName,
         time: time[i],
-        urgency: "high",
+        urgency: isHigh ? "high" : "medium",
         articleUrl: "/articles/coldwave"
       });
+
       added.add("coldwave");
     }
   }
 
   for (let i = 0; i < time.length; i++) {
 
-    if (precipitation[i] >= HEAVY_RAIN_THRESHOLD && !added.has("rain")) {
+    if (
+      precipitation[i] >= HEAVY_RAIN_MEDIUM &&
+      !added.has("rain")
+    ) {
+
+      const isHigh = precipitation[i] >= HEAVY_RAIN_THRESHOLD;
 
       alerts.push({
         notification: {
-        title: "Heavy Rain Warning",
-        body: "Heavy rainfall expected in your location.",
+          title: "Heavy Rain Warning",
+          body: "Heavy rainfall expected in your location.",
         },
-        title: "alerts.rainAlert.title",
-        description: "alerts.rainAlert.description",
+        title: isHigh
+          ? "alerts.rainAlert.title"
+          : "alerts.rainAlert.mediumTitle",
+        description: isHigh
+          ? "alerts.rainAlert.description"
+          : "alerts.rainAlert.mediumDescription",
         type: "rain",
         icon: "rainy",
         issuer: "alerts.rainAlert.issuer",
         showMore: "alerts.showMore",
         location: locationName,
         time: time[i],
-        urgency: "high",
+        urgency: isHigh ? "high" : "medium",
         articleUrl: "/articles/rains",
-      
       });
+
       added.add("rain");
     }
 
-    if (uv_index[i] >= UV_INDEX_HIGH_THRESHOLD && !added.has("uv")) {
+    if (
+      uv_index[i] >= UV_INDEX_MEDIUM_THRESHOLD &&
+      !added.has("uv")
+    ) {
+
+      const isHigh = uv_index[i] >= UV_INDEX_HIGH_THRESHOLD;
 
       alerts.push({
         notification: {
-          
-        title: "Extreme UV Warning",
-        body: "Very high UV index expected in your location.",
+          title: "Extreme UV Warning",
+          body: "Very high UV index expected in your location.",
         },
-        title: "alerts.uvIndex.title",
-        description: "alerts.uvIndex.description",
+        title: isHigh
+          ? "alerts.uvIndex.title"
+          : "alerts.uvIndex.mediumTitle",
+        description: isHigh
+          ? "alerts.uvIndex.description"
+          : "alerts.uvIndex.mediumDescription",
         type: "uv",
         icon: "flare",
         issuer: "alerts.uvIndex.issuer",
         showMore: "alerts.showMore",
         location: locationName,
         time: time[i],
-        urgency: "high",
+        urgency: isHigh ? "high" : "medium",
         articleUrl: "/articles/heatwaves",
-      
       });
+
       added.add("uv");
     }
 
-    const strongWind = wind_speed_10m[i] > STRONG_WIND_THRESHOLD;
-    const strongGust =
-      wind_gusts_10m[i] && wind_gusts_10m[i] > GUST_WIND_THRESHOLD;
+   const strongWind = wind_speed_10m[i] > STRONG_WIND_THRESHOLD;  
+const strongGust =  
+  wind_gusts_10m[i] && wind_gusts_10m[i] > GUST_WIND_THRESHOLD;  
 
-    if (strongWind && !added.has("wind")) {
+if (strongWind && !added.has("wind")) {  
 
-      alerts.push({
-        notification: {
-        title: strongGust ? "Strong Wind Alert 💨" : "Wind Advisory 💨",
-        body: "Strong winds expected in your location.",
-        },
-        title: "alerts.strongWind.title",
-        description: "alerts.strongWind.description",
-        type: "wind",
-        icon: "air",
-        issuer: "alerts.strongWind.issuer",
-        showMore: "alerts.showMore",
-        location: locationName,
-        time: time[i],
-        urgency: "high",
-        articleUrl: "/articles/sandstorms",
-      
-      });
+  alerts.push({  
+    notification: {  
+    title: strongGust ? "Strong Wind Alert 💨" : "Wind Advisory 💨",  
+    body: "Strong winds expected in your location.",  
+    },  
+    title: "alerts.strongWind.title",  
+    description: "alerts.strongWind.description",  
+    type: "wind",  
+    icon: "air",  
+    issuer: "alerts.strongWind.issuer",  
+    showMore: "alerts.showMore",  
+    location: locationName,  
+    time: time[i],  
+    urgency: "high",  
+    articleUrl: "/articles/sandstorms",  
+    
+  });  
 
-      added.add("wind");
-    }
+  added.add("wind");  
+}
+
   }
 
   if (relative_humidity_2m) {
@@ -172,30 +211,38 @@ module.exports = function processWeatherData(data, locationName) {
     const avg =
       humidity.reduce((sum, v) => sum + v, 0) / humidity.length;
 
-    if (avg > HIGH_HUMIDITY_THRESHOLD && !added.has("humidity")) {
+    if (
+      avg > HIGH_HUMIDITY_MEDIUM &&
+      !added.has("humidity")
+    ) {
+
+      const isHigh = avg > HIGH_HUMIDITY_THRESHOLD;
 
       alerts.push({
         notification: {
-        title: "High Humidity Warning 💧",
-        body: "Very humid conditions expected in your location.",
+          title: "High Humidity Warning 💧",
+          body: "Very humid conditions expected in your location.",
         },
-        title: "alerts.highHumidity.title",
-        description: "alerts.highHumidity.description",
+        title: isHigh
+          ? "alerts.highHumidity.title"
+          : "alerts.highHumidity.mediumTitle",
+        description: isHigh
+          ? "alerts.highHumidity.description"
+          : "alerts.highHumidity.mediumDescription",
         type: "humidity",
         icon: "water_drop",
         issuer: "alerts.highHumidity.issuer",
         showMore: "alerts.showMore",
         location: locationName,
-        time: time[i],
-        urgency: "high",
+        time: time[0],
+        urgency: isHigh ? "high" : "medium",
         articleUrl: "/articles/humidity",
-      
       });
 
       added.add("humidity");
     }
-  
+
   }
-  
+
   return alerts;
 };
