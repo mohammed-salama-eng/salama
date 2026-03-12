@@ -114,8 +114,8 @@ module.exports = function processWeatherData(data, locationName) {
           if (!added.has(type)) {
             alerts.push({
               notification: { title: `${type} alert`, body: "Weather alert in your location." },
-              title: severity === "high" ? `${config.key}.title` : `${config.key}.mediumTitle`,
-              description: severity === "high" ? `${config.key}.description` : `${config.key}.mediumDescription`,
+              title: severity === "high" ? `${config.key}.title` : `${config.key}.titleMedium`,
+              description: severity === "high" ? `${config.key}.description` : `${config.key}.descriptionMedium`,
               type,
               icon: config.icon,
               issuer: config.issuer,
