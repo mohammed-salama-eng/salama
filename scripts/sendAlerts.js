@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 const weatherLogic = require("./weather");
 const dustLogic = require("./dust_storms");
-const healthRisksLogic = require("./health_risks")
+const calculateHealthRisks = require("./health_risks")
 
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -24,19 +24,27 @@ async function run() {
     const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=apparent_temperature,precipitation,uv_index,wind_speed_10m,wind_gusts_10m,relative_humidity_2m` +
-    `&timezone=auto&wind_speed_unit=ms&forecast_days=3`
+    `&timezone=gmt+2&wind_speed_unit=ms&forecast_days=3`
         );
 
     const dustResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
-    `&timezone=auto&forecast_days=3`
+    `&timezone=gmt+2&forecast_days=3`
 );
+
+    const healthResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+    `&daily=temperature,precipitation,wind,humidity,uv,pressureToday,pressureYesterday` +
+    `&timezone=gmt+2&wind_speed_unit=ms&forecast_days=1`
+        );
 
     const weatherData = await weatherResponse.json();
     const dustData = await dustResponse.json();
+    const healthData = await healthResponse.json();
     const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
     const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
+    const healthRisks = calculateHealthRisks(healthData, "Ad Dabbah Northern");
 
 
     if (weatherAlerts.length <= 0 && !dustAlert) {
@@ -107,6 +115,23 @@ async function run() {
 
     }
 
+    if(healthRisks) {
+        const healthRiskId = `${locality}_health_risks`;
+       await db.collection("health").doc(healthRisksId).set({
+               location: locality,
+               flu: healthRisks.flu,
+               infection: healthRisks.infection,
+               migraine: healthRisks.migraine,
+               dehydration: healthRisks.dehydration,
+               heatIllness: healthRisks.heatIllness,
+               mosquito: healthRisks.mosquito,
+               houseflies: healthRisks.houseflies,
+               createdAt: Date.now(),
+               expiresAt: Date.now() + 24 * 60 * 60 * 1000
+           }, { merge: true });
+
+    }
+    
 }
 
 run();
