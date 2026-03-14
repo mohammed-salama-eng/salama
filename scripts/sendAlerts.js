@@ -119,13 +119,14 @@ async function run() {
         const healthRisksId = `${locality}_health_risks`;
        await db.collection("health").doc(healthRisksId).set({
                location: locality,
-               flu: healthRisks.flu,
-               infection: healthRisks.infection,
-               migraine: healthRisks.migraine,
-               dehydration: healthRisks.dehydration,
-               heatIllness: healthRisks.heatIllness,
-               mosquito: healthRisks.mosquito,
-               houseflies: healthRisks.houseflies,
+               risks: healthRisks,
+               // flu: healthRisks.flu,
+               // infection: healthRisks.infection,
+               // migraine: healthRisks.migraine,
+               // dehydration: healthRisks.dehydration,
+               // heatIllness: healthRisks.heatIllness,
+               // mosquito: healthRisks.mosquito,
+               // houseflies: healthRisks.houseflies,
                createdAt: Date.now(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
            }, { merge: true });
