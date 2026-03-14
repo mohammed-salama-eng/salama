@@ -24,19 +24,19 @@ async function run() {
     const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=apparent_temperature,precipitation,uv_index,wind_speed_10m,wind_gusts_10m,relative_humidity_2m` +
-    `&timezone=gmt+2&wind_speed_unit=ms&forecast_days=3`
+    `&timezone=GMT+2&wind_speed_unit=ms&forecast_days=3`
         );
 
     const dustResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
-    `&timezone=gmt+2&forecast_days=3`
+    `&timezone=GMT+2&forecast_days=3`
 );
 
     const healthResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&daily=temperature,precipitation,wind,humidity,uv,pressureToday,pressureYesterday` +
-    `&timezone=gmt+2&wind_speed_unit=ms&forecast_days=1`
+    `&timezone=GMT+2&wind_speed_unit=ms&forecast_days=1`
         );
 
     const weatherData = await weatherResponse.json();
