@@ -56,8 +56,8 @@ const ALERT_CONFIG = {
     articleUrl: "/articles/sandstorms",
     issuer: "alerts.strongWind.issuer",
     key: "alerts.strongWind",
-    threshold: 6,
-    gustThreshold: 12
+    threshold: 2,
+    gustThreshold: 4
   }
 };
 
