@@ -44,7 +44,7 @@ async function run() {
     const healthData = await healthResponse.json();
     const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
     const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
-    const healthRisks = calculateHealthRisks(healthData, "Ad Dabbah Northern");
+    const healthRisks = calculateHealthRisks(healthData);
 
 
     if (weatherAlerts.length <= 0 && !dustAlert) {
