@@ -153,7 +153,7 @@ module.exports = function processWeatherData(data, locationName) {
         issuer: windConfig.issuer,
         articleUrl: windConfig.articleUrl,
         location: locationName,
-        time: time[i],
+        time: time,
         urgency: "high",
         showMore: "alerts.showMore"
       });
