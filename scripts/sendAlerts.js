@@ -116,7 +116,7 @@ async function run() {
     }
 
     if(healthRisks) {
-        const healthRiskId = `${locality}_health_risks`;
+        const healthRisksId = `${locality}_health_risks`;
        await db.collection("health").doc(healthRisksId).set({
                location: locality,
                flu: healthRisks.flu,
