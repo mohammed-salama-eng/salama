@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 
 const weatherLogic = require("./weather");
 const dustLogic = require("./dust_storms");
+const healthRisksLogic = require("./health_risks")
 
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
