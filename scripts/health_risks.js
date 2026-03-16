@@ -3,11 +3,11 @@ function clamp(v, min = 0, max = 100) {
 }
 
 function riskLevel(score) {
-  if (score < 20) return "very_low";
+  if (score < 20) return "low";
   if (score < 40) return "low";
   if (score < 60) return "moderate";
   if (score < 80) return "high";
-  return "very_high";
+  return "high";
 }
 
 module.exports = function calculateHealthRisks(weather) {
