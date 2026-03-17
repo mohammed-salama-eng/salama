@@ -35,7 +35,7 @@ async function run() {
 
     const healthResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&daily=temperature,precipitation,wind,humidity,uv,pressureToday,pressureYesterday` +
+    `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max,relative_humidity_2m_mean,pressure_msl_mean` +
     `&timezone=auto&wind_speed_unit=ms&forecast_days=1`
         );
 
