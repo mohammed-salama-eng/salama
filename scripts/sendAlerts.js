@@ -128,13 +128,6 @@ async function run() {
        await db.collection("health").doc(healthRisksId).set({
                location: locality,
                risks: healthRisks,
-               // flu: healthRisks.flu,
-               // infection: healthRisks.infection,
-               // migraine: healthRisks.migraine,
-               // dehydration: healthRisks.dehydration,
-               // heatIllness: healthRisks.heatIllness,
-               // mosquito: healthRisks.mosquito,
-               // houseflies: healthRisks.houseflies,
                createdAt: Date.now(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
            }, { merge: true });
