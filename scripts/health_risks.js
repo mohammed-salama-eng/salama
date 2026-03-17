@@ -8,11 +8,10 @@ function safe(v, fallback = 0) {
 }
 
 function riskLevel(score) {
-  if (score < 20) return "very_low";
   if (score < 40) return "low";
   if (score < 60) return "moderate";
   if (score < 80) return "high";
-  return "very_high";
+  return "low"
 }
 
 module.exports = function calculateHealthRisks(weather) {
