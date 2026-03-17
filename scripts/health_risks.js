@@ -176,9 +176,9 @@ module.exports = function calculateHealthRisks(weather) {
   /* ---------------- DEHYDRATION ---------------- */
 
   const dehydrationScore = clamp(
-    (tempMax * 2) +
-    (wind * 1.5) -
-    (humidity * 0.4)
+    (tempMax * 2.2) +
+    (wind * 1.8) -
+    (humidity * 0.25)
   );
 
   return {
