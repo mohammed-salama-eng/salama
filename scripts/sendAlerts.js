@@ -84,7 +84,11 @@ async function run() {
     for (const alert of weatherAlerts) {
         // Push notifications
         await messaging.send({
-            topic: locality,
+            topic: `${locality}_en`,
+            notification: alert.notification
+        });
+        await messaging.send({
+            topic: `${locality}_ar`,
             notification: alert.notification
         });
 
@@ -109,7 +113,11 @@ async function run() {
     
     if(dustAlert) {
         await messaging.send({
-            topic: locality,
+            topic: `${locality}_en`,
+            notification: dustAlert
+        });
+        await messaging.send({
+            topic: `${locality}_ar`,
             notification: dustAlert
         });
 
