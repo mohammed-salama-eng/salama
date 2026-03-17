@@ -1,47 +1,56 @@
 function clamp(v, min = 0, max = 100) {
+  if (isNaN(v)) return 0;
   return Math.max(min, Math.min(max, v));
 }
 
+function safe(v, fallback = 0) {
+  return (v === undefined || v === null || isNaN(v)) ? fallback : v;
+}
+
 function riskLevel(score) {
-  if (score < 20) return "low";
+  if (score < 20) return "very_low";
   if (score < 40) return "low";
   if (score < 60) return "moderate";
   if (score < 80) return "high";
-  return "high";
+  return "very_high";
 }
 
 module.exports = function calculateHealthRisks(weather) {
 
-  const {
-    temperature,
-    humidity,
-    wind,
-    precipitation,
-    uv,
-    pressureToday,
-    pressureYesterday
-  } = weather;
+  const tempMax = safe(weather.temperature_2m_max);
+  const tempMin = safe(weather.temperature_2m_min);
+  const tempAvg = (tempMax + tempMin) / 2;
+
+  const humidity = safe(weather.relative_humidity_2m_mean, 50);
+  const wind = safe(weather.wind_speed_10m_max);
+  const precipitation = safe(weather.precipitation_sum);
+  const uv = safe(weather.uv_index_max);
+
+  const pressureToday = safe(weather.pressure_msl_mean, 1010);
+  const pressureYesterday = safe(weather.pressure_msl_mean_prev, pressureToday);
+
+  const pressureChange = Math.abs(pressureToday - pressureYesterday);
 
   /* ---------------- MOSQUITO ACTIVITY ---------------- */
 
   let tempScore;
 
-  if (temperature < 10) tempScore = 0;
-  else if (temperature < 18) tempScore = 20;
-  else if (temperature < 24) tempScore = 50;
-  else if (temperature < 32) tempScore = 100;
-  else if (temperature < 38) tempScore = 70;
-  else tempScore = 20;
+  if (tempAvg < 10) tempScore = 0;
+  else if (tempAvg < 18) tempScore = 25;
+  else if (tempAvg < 25) tempScore = 70;
+  else if (tempAvg < 32) tempScore = 100;
+  else if (tempAvg < 38) tempScore = 75;
+  else tempScore = 40;
 
-  const humidityScore = clamp((humidity - 40) * 2);
+  const humidityScore = clamp((humidity - 40) * 1.8);
 
   let rainScore = 10;
-  if (precipitation > 5) rainScore = 80;
-  else if (precipitation > 1) rainScore = 40;
+  if (precipitation > 6) rainScore = 90;
+  else if (precipitation > 2) rainScore = 50;
 
   let windPenalty = 0;
-  if (wind > 20) windPenalty = -40;
-  else if (wind > 12) windPenalty = -20;
+  if (wind > 30) windPenalty = -40;
+  else if (wind > 18) windPenalty = -20;
 
   const mosquitoScore = clamp(
     0.45 * tempScore +
@@ -52,25 +61,25 @@ module.exports = function calculateHealthRisks(weather) {
 
   /* ---------------- HOUSEFLY ACTIVITY ---------------- */
 
-  if (temperature < 10) tempScore = 0;
-  else if (temperature < 18) tempScore = 30;
-  else if (temperature < 24) tempScore = 70;
-  else if (temperature < 30) tempScore = 100;
-  else if (temperature < 36) tempScore = 80;
+  if (tempAvg < 10) tempScore = 0;
+  else if (tempAvg < 18) tempScore = 40;
+  else if (tempAvg < 25) tempScore = 80;
+  else if (tempAvg < 32) tempScore = 100;
+  else if (tempAvg < 38) tempScore = 70;
   else tempScore = 40;
 
   let flyHumidityScore;
 
-  if (humidity < 30) flyHumidityScore = 20;
+  if (humidity < 30) flyHumidityScore = 30;
   else if (humidity < 60) flyHumidityScore = 100;
   else if (humidity < 80) flyHumidityScore = 70;
-  else flyHumidityScore = 40;
+  else flyHumidityScore = 50;
 
-  let rainPenalty = precipitation > 3 ? -30 : 0;
+  let rainPenalty = precipitation > 4 ? -25 : 0;
 
   windPenalty = 0;
-  if (wind > 20) windPenalty = -30;
-  else if (wind > 12) windPenalty = -10;
+  if (wind > 30) windPenalty = -30;
+  else if (wind > 18) windPenalty = -10;
 
   const flyScore = clamp(
     0.55 * tempScore +
@@ -81,25 +90,23 @@ module.exports = function calculateHealthRisks(weather) {
 
   /* ---------------- MIGRAINE RISK ---------------- */
 
-  const pressureChange = Math.abs(pressureToday - pressureYesterday);
-
   let pressureScore;
 
   if (pressureChange < 2) pressureScore = 10;
   else if (pressureChange < 4) pressureScore = 40;
-  else if (pressureChange < 6) pressureScore = 70;
+  else if (pressureChange < 6) pressureScore = 75;
   else pressureScore = 100;
 
-  const migraineHumidityScore = clamp((humidity - 50) * 2);
+  const migraineHumidityScore = clamp((humidity - 50) * 1.5);
 
   let heatScore;
 
-  if (temperature < 20) heatScore = 20;
-  else if (temperature < 28) heatScore = 40;
-  else if (temperature < 34) heatScore = 70;
+  if (tempMax < 20) heatScore = 20;
+  else if (tempMax < 28) heatScore = 40;
+  else if (tempMax < 34) heatScore = 70;
   else heatScore = 90;
 
-  let windScore = wind > 25 ? 60 : 20;
+  let windScore = wind > 35 ? 60 : 20;
 
   const migraineScore = clamp(
     0.45 * pressureScore +
@@ -112,11 +119,11 @@ module.exports = function calculateHealthRisks(weather) {
 
   let fluTempScore;
 
-  if (temperature < 0) fluTempScore = 40;
-  else if (temperature < 10) fluTempScore = 100;
-  else if (temperature < 15) fluTempScore = 80;
-  else if (temperature < 20) fluTempScore = 50;
-  else if (temperature < 25) fluTempScore = 20;
+  if (tempMin < 0) fluTempScore = 50;
+  else if (tempMin < 10) fluTempScore = 100;
+  else if (tempMin < 15) fluTempScore = 80;
+  else if (tempMin < 20) fluTempScore = 50;
+  else if (tempMin < 25) fluTempScore = 20;
   else fluTempScore = 5;
 
   let fluHumidityScore;
@@ -124,7 +131,7 @@ module.exports = function calculateHealthRisks(weather) {
   if (humidity < 30) fluHumidityScore = 100;
   else if (humidity < 40) fluHumidityScore = 80;
   else if (humidity < 60) fluHumidityScore = 50;
-  else if (humidity < 80) fluHumidityScore = 20;
+  else if (humidity < 80) fluHumidityScore = 25;
   else fluHumidityScore = 10;
 
   const fluScore = clamp(
@@ -136,10 +143,10 @@ module.exports = function calculateHealthRisks(weather) {
 
   let infectionTempScore;
 
-  if (temperature < 5) infectionTempScore = 20;
-  else if (temperature < 15) infectionTempScore = 70;
-  else if (temperature < 25) infectionTempScore = 100;
-  else if (temperature < 35) infectionTempScore = 60;
+  if (tempAvg < 5) infectionTempScore = 20;
+  else if (tempAvg < 15) infectionTempScore = 70;
+  else if (tempAvg < 25) infectionTempScore = 100;
+  else if (tempAvg < 35) infectionTempScore = 60;
   else infectionTempScore = 30;
 
   let infectionHumidityScore;
@@ -150,9 +157,8 @@ module.exports = function calculateHealthRisks(weather) {
   else infectionHumidityScore = 90;
 
   let uvPenalty = 0;
-
-  if (uv > 8) uvPenalty = -40;
-  else if (uv > 5) uvPenalty = -20;
+  if (uv > 9) uvPenalty = -40;
+  else if (uv > 6) uvPenalty = -20;
 
   const infectionScore = clamp(
     0.5 * infectionHumidityScore +
@@ -160,19 +166,19 @@ module.exports = function calculateHealthRisks(weather) {
     uvPenalty
   );
 
-  /* ---------------- HEAT ILLNESS RISK ---------------- */
+  /* ---------------- HEAT ILLNESS ---------------- */
 
   const heatIndexScore = clamp(
-    (temperature * 2) +
-    (humidity * 0.5)
+    (tempMax * 2) +
+    (humidity * 0.4)
   );
 
-  /* ---------------- DEHYDRATION RISK ---------------- */
+  /* ---------------- DEHYDRATION ---------------- */
 
   const dehydrationScore = clamp(
-    (temperature * 2) +
-    (wind * 2) -
-    (humidity * 0.5)
+    (tempMax * 2) +
+    (wind * 1.5) -
+    (humidity * 0.4)
   );
 
   return {
