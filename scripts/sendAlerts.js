@@ -58,7 +58,7 @@ async function run() {
         issuer: "alerts.noAlert.issuer",
         showMore: "alerts.showMore",
         location: locality,
-        time: "alerts.noAlert.time",
+        start: "alerts.noAlert.time",
         urgency: "none",
     articleUrl: [
       "/articles/cholera",
@@ -99,14 +99,14 @@ async function run() {
                title: alert.title,
                description: alert.description,
                alertType: alert.type,
-               time: alert.start,
+               start: alert.start,
+               end: alert.end,
                urgency: alert.urgency,
                icon: alert.icon,
                articleUrl: alert.articleUrl,
                showMore: alert.showMore,
                issuer: alert.issuer,
                createdAt: Date.now(),
-               expiresAt: alert.end
            }, { merge: true });
 
     }
