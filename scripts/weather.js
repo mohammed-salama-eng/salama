@@ -1,3 +1,82 @@
+const formatDateEn = (date: Date, lang: string) => {
+  // DAY
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const afterTomorrow = new Date(today);
+  afterTomorrow.setDate(afterTomorrow.getDate() + 2);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  // TIME
+  let time;
+  const hour = Number(date.getHours());
+
+  if (hour >= 0 && hour < 5) time = "early morning";
+  else if (hour >= 5 && hour < 12) time = "morning";
+  else if (hour >= 12 && hour < 15) time = "noon";
+  else if (hour >= 15 && hour < 18) time = "after noon";
+  else if (hour >= 18 && hour < 20) time = "evening";
+  else time = "night";
+
+  if (date.toDateString() === today.toDateString()) {
+    return "this"  + time;
+  }
+  if (date.toDateString() === tomorrow.toDateString()) {
+    return "tomorrow " + time;
+  }
+  if (date.toDateString() === afterTomorrow.toDateString()) {
+    return "after tomorrow " + time;
+  }
+  if (date.toDateString() === yesterday.toDateString()) {
+    return "yesterday " + time;
+  }
+  return i18n.language === "ar"
+    ? time + " " + date.toLocaleDateString(lang, { weekday: "long" })
+    : date.toLocaleDateString(lang, { weekday: "long" }) + " " + time;
+};
+
+
+const formatDateAr = (date: Date, lang: string) => {
+  // DAY
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const afterTomorrow = new Date(today);
+  afterTomorrow.setDate(afterTomorrow.getDate() + 2);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  // TIME
+  let time;
+  const hour = Number(date.getHours());
+
+  if (hour >= 0 && hour < 5) time = "فجر";
+  else if (hour >= 5 && hour < 12) time = "صباح";
+  else if (hour >= 12 && hour < 15) time = "ظهر";
+  else if (hour >= 15 && hour < 18) time = "عصر";
+  else if (hour >= 18 && hour < 20) time = "مساء";
+  else time = "ليلة";
+
+  if (date.toDateString() === today.toDateString()) {
+    return time + "اليوم ";
+  }
+  if (date.toDateString() === tomorrow.toDateString()) {
+    return time + "الغد ";
+  }
+  if (date.toDateString() === afterTomorrow.toDateString()) {
+    return time + "بعد غد ";
+  }
+  if (date.toDateString() === yesterday.toDateString()) {
+    return time + "الأمس ";
+  }
+  return time + " " + date.toLocaleDateString(lang, { weekday: "long" })
+};
+
+
+
+
+
 const ALERT_CONFIG = {
   heat: {
     notificationTitle: "Heatwave Alert",
@@ -146,13 +225,15 @@ module.exports = function processWeatherData(data, locationName) {
       const severity = tracker.severity;
 
       alerts.push({
+      formattedTimeEn: formatDateEn(time[tracker.start]),
+      formattedTimeAr: formatDateAr(time[tracker.start]),
         notification: {
           title: severity === "high" ? config.notificationTitle : config.notificationTitleMedium,
-          body: severity === "high" ? config.notificationDescription : config.notificationDescriptionMedium,
+          body: severity === "high" ? config.notificationDescription + " " + formattedTimeEn : config.notificationDescriptionMedium + " " + formattedTimeEn,
         },
         notificationAr: {
           title: severity === "high" ? config.notificationTitleAr : config.notificationTitleMediumAr,
-          body: severity === "high" ? config.notificationDescriptionAr : config.notificationDescriptionMediumAr,
+          body: severity === "high" ? config.notificationDescriptionAr + " " + formattedTimeAr : config.notificationDescriptionMediumAr + " " + formattedTimeAr,
         },
         title: severity === "high"
           ? `${config.key}.title`
