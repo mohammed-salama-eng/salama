@@ -1,4 +1,4 @@
-const formatDateEn = (date: Date, lang: string) => {
+const formatDateEn = (date, lang) => {
   // DAY
   const today = new Date();
   const tomorrow = new Date(today);
@@ -37,7 +37,7 @@ const formatDateEn = (date: Date, lang: string) => {
 };
 
 
-const formatDateAr = (date: Date, lang: string) => {
+const formatDateAr = (date, lang) => {
   // DAY
   const today = new Date();
   const tomorrow = new Date(today);
