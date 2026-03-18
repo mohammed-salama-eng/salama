@@ -225,8 +225,8 @@ module.exports = function processWeatherData(data, locationName) {
       const severity = tracker.severity;
 
       alerts.push({
-      formattedTimeEn: formatDateEn(time[tracker.start]),
-      formattedTimeAr: formatDateAr(time[tracker.start]),
+      formattedTimeEn: formatDateEn(new Date(time[tracker.start])),
+      formattedTimeAr: formatDateAr(new Date(time[tracker.start])),
         notification: {
           title: severity === "high" ? config.notificationTitle : config.notificationTitleMedium,
           body: severity === "high" ? config.notificationDescription + " " + formattedTimeEn : config.notificationDescriptionMedium + " " + formattedTimeEn,
