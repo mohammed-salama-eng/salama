@@ -225,15 +225,13 @@ module.exports = function processWeatherData(data, locationName) {
       const severity = tracker.severity;
 
       alerts.push({
-      formattedTimeEn: formatDateEn(new Date(time[tracker.start])),
-      formattedTimeAr: formatDateAr(new Date(time[tracker.start])),
         notification: {
           title: severity === "high" ? config.notificationTitle : config.notificationTitleMedium,
-          body: severity === "high" ? config.notificationDescription + " " + formattedTimeEn : config.notificationDescriptionMedium + " " + formattedTimeEn,
+          body: severity === "high" ? config.notificationDescription + " " + formatDateEn(new Date(time[tracker.start])) : config.notificationDescriptionMedium + " " + formatDateEn(new Date(time[tracker.start])),
         },
         notificationAr: {
           title: severity === "high" ? config.notificationTitleAr : config.notificationTitleMediumAr,
-          body: severity === "high" ? config.notificationDescriptionAr + " " + formattedTimeAr : config.notificationDescriptionMediumAr + " " + formattedTimeAr,
+          body: severity === "high" ? config.notificationDescriptionAr + " " + formatDateAr(new Date(time[tracker.start])) : config.notificationDescriptionMediumAr + " " + formatDateAr(new Date(time[tracker.start])),
         },
         title: severity === "high"
           ? `${config.key}.title`
