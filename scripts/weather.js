@@ -5,9 +5,9 @@ const ALERT_CONFIG = {
     articleUrl: "/articles/heatwaves",
     issuer: "alerts.heatwave.issuer",
     key: "alerts.heatwave",
-    medium: 30,
-    high: 44,
-    minDuration: 3,
+    medium: 42,
+    high: 45,
+    minDuratin: 3,
     comparator: (v, t) => v > t
   },
   cold: {
