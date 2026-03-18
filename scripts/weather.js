@@ -1,22 +1,64 @@
-const THRESHOLDS = {
-  heat: { medium: 42, high: 44, minDuration: 3 },
-  cold: { medium: 15, high: 12, minDuration: 3 },
-  rain: { medium: 2, high: 4, minDuration: 2 },
-  uv: { medium: 8.5, high: 9, minDuration: 2 },
-  humidity: { medium: 60, high: 80, minDuration: 3 },
-  wind: { speed: 6.5, gust: 12, minDuration: 2 }
-};
-
-function getSeverity(value, { medium, high }, type) {
-  if (type === "cold") {
-    if (value < high) return "high";
-    if (value < medium) return "medium";
-  } else {
-    if (value > high) return "high";
-    if (value > medium) return "medium";
+const ALERT_CONFIG = {
+  heat: {
+    icon: "wb_sunny",
+    articleUrl: "/articles/heatwaves",
+    issuer: "alerts.heatwave.issuer",
+    key: "alerts.heatwave",
+    medium: 42,
+    high: 44,
+    minDuration: 3,
+    comparator: (v, t) => v > t
+  },
+  cold: {
+    icon: "ac_unit",
+    articleUrl: "/articles/coldwave",
+    issuer: "alerts.coldwave.issuer",
+    key: "alerts.coldwave",
+    medium: 15,
+    high: 12,
+    minDuration: 3,
+    comparator: (v, t) => v < t
+  },
+  rain: {
+    icon: "rainy",
+    articleUrl: "/articles/rains",
+    issuer: "alerts.rainAlert.issuer",
+    key: "alerts.rainAlert",
+    medium: 2,
+    high: 4,
+    minDuration: 2,
+    comparator: (v, t) => v >= t
+  },
+  uv: {
+    icon: "flare",
+    articleUrl: "/articles/heatwaves",
+    issuer: "alerts.uvIndex.issuer",
+    key: "alerts.uvIndex",
+    medium: 8.5,
+    high: 9,
+    minDuration: 2,
+    comparator: (v, t) => v >= t
+  },
+  humidity: {
+    icon: "water_drop",
+    articleUrl: "/articles/humidity",
+    issuer: "alerts.highHumidity.issuer",
+    key: "alerts.highHumidity",
+    medium: 60,
+    high: 80,
+    minDuration: 3,
+    comparator: (v, t) => v >= t
+  },
+  wind: {
+    icon: "air",
+    articleUrl: "/articles/sandstorms",
+    issuer: "alerts.strongWind.issuer",
+    key: "alerts.strongWind",
+    threshold: 7,
+    gustThreshold: 12,
+    minDuration: 2
   }
-  return null;
-}
+};
 
 module.exports = function processWeatherData(data, locationName) {
 
@@ -28,175 +70,142 @@ module.exports = function processWeatherData(data, locationName) {
     apparent_temperature,
     precipitation,
     uv_index,
+    relative_humidity_2m,
     wind_speed_10m,
-    wind_gusts_10m,
-    relative_humidity_2m
+    wind_gusts_10m
   } = data.hourly;
 
-  const trackers = {
-    heat: null,
-    cold: null,
-    rain: null,
-    uv: null,
-    humidity: null,
-    wind: null
-  };
+  const trackers = {};
 
-  function startEvent(type, i, severity) {
+  // initialize trackers for ALL types including wind
+  Object.keys(ALERT_CONFIG).forEach(type => {
     trackers[type] = {
-      startIndex: i,
-      maxSeverity: severity
+      start: null,
+      peak: null,
+      duration: 0,
+      severity: null
     };
-  }
+  });
 
-  function updateEvent(type, severity) {
-    if (!trackers[type]) return;
-
-    if (
-      severity === "high" ||
-      (severity === "medium" && trackers[type].maxSeverity !== "high")
-    ) {
-      trackers[type].maxSeverity = severity;
-    }
-  }
-
-  function endEvent(type, i) {
+  function processEnd(type, endIndex) {
     const tracker = trackers[type];
-    if (!tracker) return;
+    const config = ALERT_CONFIG[type];
 
-    const duration = i - tracker.startIndex;
+    if (tracker.start === null) return;
 
-    if (duration >= THRESHOLDS[type].minDuration && !added.has(type)) {
-      const start = time[tracker.startIndex];
-      const end = time[i - 1];
+    if (tracker.duration >= config.minDuration && !added.has(type)) {
 
-      const isHigh = tracker.maxSeverity === "high";
+      const severity = tracker.severity;
 
       alerts.push({
         notification: {
-          title: isHigh
-            ? `${type} Alert`
-            : `alerts.${type}.mediumTitle`,
-          body: isHigh
-            ? `${type} conditions expected`
-            : `alerts.${type}.mediumDescription`
+          title: `${type} alert`,
+          body: "Weather alert in your location."
         },
-        title: isHigh
-          ? `alerts.${type}.title`
-          : `alerts.${type}.mediumTitle`,
-        description: isHigh
-          ? `alerts.${type}.description`
-          : `alerts.${type}.mediumDescription`,
+        title: severity === "high"
+          ? `${config.key}.title`
+          : `${config.key}.mediumTitle`,
+        description: severity === "high"
+          ? `${config.key}.description`
+          : `${config.key}.mediumDescription`,
         type,
-        icon: type,
-        issuer: `alerts.${type}.issuer`,
-        showMore: "alerts.showMore",
+        icon: config.icon,
+        issuer: config.issuer,
+        articleUrl: config.articleUrl,
         location: locationName,
-        start,
-        end,
-        urgency: isHigh ? "high" : "medium"
+        start: time[tracker.start],
+        end: time[endIndex],
+        urgency: severity,
+        showMore: "alerts.showMore"
       });
 
       added.add(type);
     }
 
-    trackers[type] = null;
+    // reset
+    tracker.start = null;
+    tracker.peak = null;
+    tracker.duration = 0;
+    tracker.severity = null;
   }
 
   for (let i = 0; i < time.length; i++) {
 
-    // ---- HEAT ----
-    const heatSeverity = getSeverity(
-      apparent_temperature[i],
-      THRESHOLDS.heat,
-      "heat"
-    );
+    // -------- NORMAL ALERTS --------
+    const hourData = {
+      heat: apparent_temperature[i],
+      cold: apparent_temperature[i],
+      rain: precipitation[i],
+      uv: uv_index[i],
+      humidity: relative_humidity_2m?.[i] ?? null
+    };
 
-    if (heatSeverity) {
-      if (!trackers.heat) startEvent("heat", i, heatSeverity);
-      else updateEvent("heat", heatSeverity);
-    } else {
-      endEvent("heat", i);
-    }
+    for (const type of ["heat", "cold", "rain", "uv", "humidity"]) {
 
-    // ---- COLD ----
-    const coldSeverity = getSeverity(
-      apparent_temperature[i],
-      THRESHOLDS.cold,
-      "cold"
-    );
+      const config = ALERT_CONFIG[type];
+      const tracker = trackers[type];
+      const value = hourData[type];
 
-    if (coldSeverity) {
-      if (!trackers.cold) startEvent("cold", i, coldSeverity);
-      else updateEvent("cold", coldSeverity);
-    } else {
-      endEvent("cold", i);
-    }
+      if (value === null) continue;
 
-    // ---- RAIN ----
-    const rainSeverity = getSeverity(
-      precipitation[i],
-      THRESHOLDS.rain,
-      "rain"
-    );
+      const meets = config.comparator(value, config.medium);
 
-    if (rainSeverity) {
-      if (!trackers.rain) startEvent("rain", i, rainSeverity);
-      else updateEvent("rain", rainSeverity);
-    } else {
-      endEvent("rain", i);
-    }
+      if (meets) {
 
-    // ---- UV ----
-    const uvSeverity = getSeverity(
-      uv_index[i],
-      THRESHOLDS.uv,
-      "uv"
-    );
+        if (tracker.start === null) {
+          tracker.start = i;
+        }
 
-    if (uvSeverity) {
-      if (!trackers.uv) startEvent("uv", i, uvSeverity);
-      else updateEvent("uv", uvSeverity);
-    } else {
-      endEvent("uv", i);
-    }
+        tracker.duration++;
 
-    // ---- HUMIDITY ----
-    if (relative_humidity_2m) {
-      const humiditySeverity = getSeverity(
-        relative_humidity_2m[i],
-        THRESHOLDS.humidity,
-        "humidity"
-      );
+        // track peak
+        tracker.peak = tracker.peak === null
+          ? value
+          : (type === "cold"
+              ? Math.min(tracker.peak, value)
+              : Math.max(tracker.peak, value));
 
-      if (humiditySeverity) {
-        if (!trackers.humidity)
-          startEvent("humidity", i, humiditySeverity);
-        else updateEvent("humidity", humiditySeverity);
+        // track severity (highest reached)
+        const isHigh = type === "cold"
+          ? value <= config.high
+          : value >= config.high;
+
+        if (isHigh) tracker.severity = "high";
+        else if (!tracker.severity) tracker.severity = "medium";
+
       } else {
-        endEvent("humidity", i);
+        processEnd(type, i - 1);
       }
     }
 
-    // ---- WIND (kept behavior but in pattern) ----
-    const strongWind = wind_speed_10m[i] > THRESHOLDS.wind.speed;
-    const strongGust =
-      wind_gusts_10m[i] && wind_gusts_10m[i] > THRESHOLDS.wind.gust;
+    // -------- WIND (NOW IN SAME PATTERN) --------
+    const windConfig = ALERT_CONFIG.wind;
+    const tracker = trackers.wind;
+
+    const strongWind = wind_speed_10m[i] > windConfig.threshold;
+    const strongGust = wind_gusts_10m?.[i] > windConfig.gustThreshold;
 
     if (strongWind) {
-      const severity = strongGust ? "high" : "medium";
 
-      if (!trackers.wind) startEvent("wind", i, severity);
-      else updateEvent("wind", severity);
+      if (tracker.start === null) {
+        tracker.start = i;
+      }
+
+      tracker.duration++;
+
+      // severity logic preserved
+      if (strongGust) tracker.severity = "high";
+      else if (!tracker.severity) tracker.severity = "medium";
+
     } else {
-      endEvent("wind", i);
+      processEnd("wind", i - 1);
     }
   }
 
-  // finalize any ongoing events
+  // -------- FINALIZE ALL OPEN EVENTS --------
   Object.keys(trackers).forEach(type => {
-    if (trackers[type]) {
-      endEvent(type, time.length);
+    if (trackers[type].start !== null) {
+      processEnd(type, time.length - 1);
     }
   });
 
