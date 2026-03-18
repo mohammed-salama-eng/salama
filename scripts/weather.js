@@ -114,10 +114,10 @@ module.exports = function processWeatherData(data, locationName) {
         },
         title: severity === "high"
           ? `${config.key}.title`
-          : `${config.key}.mediumTitle`,
+          : `${config.key}.titleMedium`,
         description: severity === "high"
           ? `${config.key}.description`
-          : `${config.key}.mediumDescription`,
+          : `${config.key}.descriptionMedium`,
         type,
         icon: config.icon,
         issuer: config.issuer,
