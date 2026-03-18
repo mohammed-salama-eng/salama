@@ -59,16 +59,16 @@ const formatDateAr = (date, lang) => {
   else time = "ليلة";
 
   if (date.toDateString() === today.toDateString()) {
-    return time + "اليوم ";
+    return time + " " + "اليوم";
   }
   if (date.toDateString() === tomorrow.toDateString()) {
-    return time + "الغد ";
+    return time + " " + "الغد ";
   }
   if (date.toDateString() === afterTomorrow.toDateString()) {
-    return time + "بعد غد ";
+    return time + " " + "بعد غد ";
   }
   if (date.toDateString() === yesterday.toDateString()) {
-    return time + "الأمس ";
+    return time + " " + "الأمس ";
   }
   return time + " " + date.toLocaleDateString(lang, { weekday: "long" })
 };
