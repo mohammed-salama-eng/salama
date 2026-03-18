@@ -1,14 +1,13 @@
 const ALERT_CONFIG = {
   heat: {
-    typeAr: "موجة حر",
     notificationTitle: "Heatwave Alert",
     notificationDescription: "Expect temperatures to rise above 45°C",
     notificationTitleMedium: "Heatwave Advisory",
-    notificationDescription: "Expect temperatures to rise above 42°C",
+    notificationDescriptionMedium: "Expect temperatures to rise above 42°C",
     notificationTitleAr: "إنذار موجة حارة",
     notificationDescriptionAr: "من المتوقع أن ترتفع درجات الحرارة إلى 45 درجة مئوية",
     notificationTitleMediumAr: "تنبيه موجة حارة",
-    notificationDescriptionAr: "من المتوقع أن ترتفع درجات الحرارة إلى 42 درجة مئوية",
+    notificationDescriptionMediumAr: "من المتوقع أن ترتفع درجات الحرارة إلى 42 درجة مئوية",
     icon: "wb_sunny",
     articleUrl: "/articles/heatwaves",
     issuer: "alerts.heatwave.issuer",
@@ -19,16 +18,15 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v > t
   },
   cold: {
-    typeAr: "موجة برد",
     icon: "ac_unit",
     notificationTitle: "Coldwave Alert",
     notificationDescription: "Expect temperatures to drop below 12°C",
     notificationTitleMedium: "Coldwave Advisory",
-    notificationDescription: "Expect temperatures to drop below 15°C",
+    notificationDescriptionMedium: "Expect temperatures to drop below 15°C",
     notificationTitleAr: "إنذار موجة باردة",
     notificationDescriptionAr: "من المتوقع أن تنخفض درجات الحرارة تحت 12 درجة مئوية",
     notificationTitleMediumAr: "تنبيه موجة باردة",
-    notificationDescriptionAr: "من المتوقع أن تنخفض درجات الحرارة تحت 15 درجة مئوية",
+    notificationDescriptionMediumAr: "من المتوقع أن تنخفض درجات الحرارة تحت 15 درجة مئوية",
     articleUrl: "/articles/coldwave",
     issuer: "alerts.coldwave.issuer",
     key: "alerts.coldwave",
@@ -38,16 +36,15 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v < t
   },
   rain: {
-    typeAr: "هطول أمطار",
     icon: "rainy",
     notificationTitle: "Rainfall Alert",
     notificationDescription: "Detected moderate to heavy rain near your location",
     notificationTitleMedium: "Rainfall Advisory",
-    notificationDescription: "Detected light to moderate rain near your location",
+    notificationDescriptionMedium: "Detected light to moderate rain near your location",
     notificationTitleAr: "إنذار هطول أمطار",
     notificationDescriptionAr: "من المتوقع هطول أمطار بين متوسطة إلى غزيرة بالقرب من موقعك",
     notificationTitleMediumAr: "تنبيه هطول أمطار",
-    notificationDescriptionAr: "من المتوقع هطول أمطار بين خفيفة إلى متوسطة بالقرب من موقعك",
+    notificationDescriptionMediumAr: "من المتوقع هطول أمطار بين خفيفة إلى متوسطة بالقرب من موقعك",
     articleUrl: "/articles/rains",
     issuer: "alerts.rainAlert.issuer",
     key: "alerts.rainAlert",
@@ -57,8 +54,15 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   uv: {
-    typeAr: "أشعة ضارة",
     icon: "flare",
+    notificationTitle: "High UV Alert",
+    notificationDescription: "Detected moderate to heavy UV index near your location",
+    notificationTitleMedium: "Moderate UV Advisory",
+    notificationDescriptionMedium: "Detected light to moderate UV index near your location",
+    notificationTitleAr: "إنذار أشعة ضارة",
+    notificationDescriptionAr: "تم رصد مستويات أشعة شمس بين متوسطة إلى كثيفة بالقرب من موقعك",
+    notificationTitleMediumAr: "تنبيه أشعة ضارة",
+    notificationDescriptionMediumAr: "تم رصد مستويات أشعة شمس ضارة بين خفيفة إلى متوسطة بالقرب من موقعك",
     articleUrl: "/articles/heatwaves",
     issuer: "alerts.uvIndex.issuer",
     key: "alerts.uvIndex",
@@ -68,8 +72,15 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   humidity: {
-    typeAr: "رطوبة عالية",
     icon: "water_drop",
+    notificationTitle: "High Humidity Alert",
+    notificationDescription: "Detected moderate to heavy humidity levels near your location",
+    notificationTitleMedium: "Moderate Humidity Advisory",
+    notificationDescriptionMedium: "Detected light to moderate humidity levels near your location",
+    notificationTitleAr: "إنذار رطوبة عالية",
+    notificationDescriptionAr: "تم رصد مستويات رطوبة بين متوسطة إلى كثيفة بالقرب من موقعك",
+    notificationTitleMediumAr: "تنبيه رطوبة متوسطة",
+    notificationDescriptionMediumAr: "تم رصد مستويات رطوبة بين خفيفة إلى متوسطة بالقرب من موقعك",
     articleUrl: "/articles/humidity",
     issuer: "alerts.highHumidity.issuer",
     key: "alerts.highHumidity",
@@ -79,8 +90,15 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   wind: {
-    typeAr: "هبوب رياح",
     icon: "air",
+    notificationTitle: "Wind Alert",
+    notificationDescription: "Detected moderate to heavy winds near your location",
+    notificationTitleMedium: "Moderate Wind Advisory",
+    notificationDescriptionMedium: "Detected light to moderate winds near your location",
+    notificationTitleAr: "إنذار رياح قوية",
+    notificationDescriptionAr: "تم رصد سرعات رياح بين متوسطة إلى شديدة بالقرب من موقعك",
+    notificationTitleMediumAr: "تنبيه نشاط رياح",
+    notificationDescriptionMediumAr: "تم رصد سرعات رياح بين خفيفة إلى متوسطة بالقرب من موقعك",
     articleUrl: "/articles/sandstorms",
     issuer: "alerts.strongWind.issuer",
     key: "alerts.strongWind",
@@ -129,12 +147,12 @@ module.exports = function processWeatherData(data, locationName) {
 
       alerts.push({
         notification: {
-          title: `${type} alert`,
-          body: "Weather alert in your location."
+          title: severity === "high" ? config.notificationTitle : config.notificationTitleMedium,
+          body: severity === "high" ? config.notificationDescription : config.notificationDescriptionMedium,
         },
         notificationAr: {
-          title: `${config.typeAr}`,
-          body: "إنذار بالقرب من منطقتك."
+          title: severity === "high" ? config.notificationTitleAr : config.notificationTitleMediumAr,
+          body: severity === "high" ? config.notificationDescriptionAr : config.notificationDescriptionMediumAr,
         },
         title: severity === "high"
           ? `${config.key}.title`
