@@ -99,14 +99,14 @@ async function run() {
                title: alert.title,
                description: alert.description,
                alertType: alert.type,
-               time: alert.time,
+               time: alert.start,
                urgency: alert.urgency,
                icon: alert.icon,
                articleUrl: alert.articleUrl,
                showMore: alert.showMore,
                issuer: alert.issuer,
                createdAt: Date.now(),
-               expiresAt: Date.now() + 24 * 60 * 60 * 1000
+               expiresAt: alert.end
            }, { merge: true });
 
     }
