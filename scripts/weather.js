@@ -1,5 +1,6 @@
 const ALERT_CONFIG = {
   heat: {
+    typeAr: "موجة حر",
     icon: "wb_sunny",
     articleUrl: "/articles/heatwaves",
     issuer: "alerts.heatwave.issuer",
@@ -10,6 +11,7 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v > t
   },
   cold: {
+    typeAr: "موجة برد",
     icon: "ac_unit",
     articleUrl: "/articles/coldwave",
     issuer: "alerts.coldwave.issuer",
@@ -20,6 +22,7 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v < t
   },
   rain: {
+    typeAr: "هطول أمطار",
     icon: "rainy",
     articleUrl: "/articles/rains",
     issuer: "alerts.rainAlert.issuer",
@@ -30,6 +33,7 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   uv: {
+    typeAr: "أشعة ضارة",
     icon: "flare",
     articleUrl: "/articles/heatwaves",
     issuer: "alerts.uvIndex.issuer",
@@ -40,6 +44,7 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   humidity: {
+    typeAr: "رطوبة عالية",
     icon: "water_drop",
     articleUrl: "/articles/humidity",
     issuer: "alerts.highHumidity.issuer",
@@ -50,11 +55,12 @@ const ALERT_CONFIG = {
     comparator: (v, t) => v >= t
   },
   wind: {
+    typeAr: "هبوب رياح",
     icon: "air",
     articleUrl: "/articles/sandstorms",
     issuer: "alerts.strongWind.issuer",
     key: "alerts.strongWind",
-    threshold: 7,
+    threshold: 6.5,
     gustThreshold: 12,
     minDuration: 2
   }
@@ -101,6 +107,10 @@ module.exports = function processWeatherData(data, locationName) {
         notification: {
           title: `${type} alert`,
           body: "Weather alert in your location."
+        },
+        notificationAr: {
+          title: `${config.typeAr}`,
+          body: "إنذار بالقرب من منطقتك."
         },
         title: severity === "high"
           ? `${config.key}.title`
