@@ -45,40 +45,6 @@ async function run() {
     const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
     const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
     const healthRisks = calculateHealthRisks(healthData);
-
-
-    if (weatherAlerts.length <= 0 && !dustAlert) {
-       const alertId = `${locality}_"noAlert`;
-        
-       await db.collection("alerts").doc(alertId).set({
-        title: "alerts.noAlert.title",
-        description: "alerts.noAlert.description",
-        alertType: "noAlert",
-        icon: "check_circle",
-        issuer: "alerts.noAlert.issuer",
-        showMore: "alerts.showMore",
-        location: locality,
-        start: "alerts.noAlert.time",
-        urgency: "none",
-    articleUrl: [
-      "/articles/cholera",
-       "/articles/coldwave",
-      "/articles/dehydration",
-      "/articles/fire",
-      "/articles/floods",
-      "/articles/heatwaves",
-      "/articles/humidity",
-      "/articles/malaria",
-      "/articles/nile",
-      "/articles/power",
-      "/articles/rains",
-      "/articles/sandstorms",
-      "/articles/scorpions",
-      "/articles/snakes",
-    ][Math.floor(Math.random() * 14)],
-           }, { merge: true });
-      
-    }
     
 
     for (const alert of weatherAlerts) {
