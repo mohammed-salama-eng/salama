@@ -89,7 +89,7 @@ async function run() {
         });
         await messaging.send({
             topic: `${locality}_ar`,
-            notification: alert.notification
+            notification: alert.notificationAr
         });
 
        // Store alert to database
