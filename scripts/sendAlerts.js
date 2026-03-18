@@ -24,19 +24,19 @@ async function run() {
     const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=apparent_temperature,precipitation,uv_index,wind_speed_10m,wind_gusts_10m,relative_humidity_2m` +
-    `&timezone=auto&wind_speed_unit=ms&forecast_days=3`
+    `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=3`
         );
 
     const dustResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
-    `&timezone=auto&forecast_days=3`
+    `&timezone=Africa/Khartoum&forecast_days=3`
 );
 
     const healthResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
     `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max,relative_humidity_2m_mean,pressure_msl_mean` +
-    `&timezone=auto&wind_speed_unit=ms&forecast_days=1`
+    `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=1`
         );
 
     const weatherData = await weatherResponse.json();
