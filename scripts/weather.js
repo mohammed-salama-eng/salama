@@ -20,7 +20,7 @@ const formatDateEn = (date, lang) => {
   else time = "night";
 
   if (date.toDateString() === today.toDateString()) {
-    return "this"  + time;
+    return "this "  + time;
   }
   if (date.toDateString() === tomorrow.toDateString()) {
     return "tomorrow " + time;
