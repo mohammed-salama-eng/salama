@@ -17,17 +17,17 @@ function riskLevel(score) {
 
 module.exports = function calculateEnhancedHealthRisks(weather) {
   // --- Input Data Extraction ---
-  const tMax = safe(weather.temperature_2m_max);
-  const tMin = safe(weather.temperature_2m_min);
-  const tAvg = safe(weather.temperature_2m_mean, (tMax + tMin) / 2);
-  const rh = safe(weather.relative_humidity_2m_mean, 50);
-  const rain = safe(weather.precipitation_sum);
-  const wind = safe(weather.wind_speed_10m_max);
-  const uv = safe(weather.uv_index_max);
-  const solar = safe(weather.shortwave_radiation_sum); // MJ/m²
+  const tMax = safe(weather.temperature_2m_max?.[0]);
+  const tMin = safe(weather.temperature_2m_min?.[0]);
+  const tAvg = safe(weather.temperature_2m_mean?.[0], (tMax + tMin) / 2);
+  const rh = safe(weather.relative_humidity_2m_mean?.[0], 50);
+  const rain = safe(weather.precipitation_sum?.[0]);
+  const wind = safe(weather.wind_speed_10m_max?.[0]);
+  const uv = safe(weather.uv_index_max?.[0]);
+  const solar = safe(weather.shortwave_radiation_sum?.[0]); // MJ/m²
 
-  const pToday = safe(weather.pressure_msl_mean, 1010);
-  const pPrev = safe(weather.pressure_msl_mean_prev, pToday);
+  const pToday = safe(weather.pressure_msl_mean?.[0], 1010);
+  const pPrev = safe(weather.pressure_msl_mean_prev?.[1], pToday);
   const pDelta = Math.abs(pToday - pPrev);
 
   // --- 1. MOSQUITO ACTIVITY (Biological Curve) ---
