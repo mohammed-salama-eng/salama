@@ -1,7 +1,6 @@
 const admin = require("firebase-admin");
 
 const weatherLogic = require("./weather");
-const dustLogic = require("./dust_storms");
 const calculateHealthRisks = require("./health_risks")
 
 
@@ -27,23 +26,15 @@ async function run() {
     `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=3`
         );
 
-    const dustResponse = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&hourly=pm10,pm2_5,dust,aerosol_optical_depth` +
-    `&timezone=Africa/Khartoum&forecast_days=3`
-);
-
     const healthResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max,relative_humidity_2m_mean,pressure_msl_mean` +
-    `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=1`
+    `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max,shortwave_radiation_sum,relative_humidity_2m_mean,pressure_msl_mean` +
+    `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=3`
         );
 
     const weatherData = await weatherResponse.json();
-    const dustData = await dustResponse.json();
     const healthData = await healthResponse.json();
     const weatherAlerts = weatherLogic(weatherData, "Ad Dabbah Northern");
-    const dustAlert = dustLogic(weatherData, "Ad Dabbah Northern");
     const healthRisks = calculateHealthRisks(healthData);
     
 
@@ -79,18 +70,6 @@ async function run() {
 
     }
     
-    if(dustAlert) {
-        await messaging.send({
-            topic: `${locality}_en`,
-            notification: dustAlert
-        });
-        await messaging.send({
-            topic: `${locality}_ar`,
-            notification: dustAlert
-        });
-
-    }
-
     if(healthRisks) {
         const healthRisksId = `${locality}_health_risks`;
        await db.collection("health").doc(healthRisksId).set({
