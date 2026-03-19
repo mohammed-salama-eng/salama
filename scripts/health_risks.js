@@ -8,196 +8,89 @@ function safe(v, fallback = 0) {
 }
 
 function riskLevel(score) {
-  if (score < 40) return "low";
-  if (score < 60) return "moderate";
-  if (score <= 100) return "high";
-  return "low"
+  if (score < 35) return "low";
+  if (score < 65) return "moderate";
+  return "high";
 }
 
 module.exports = function calculateHealthRisks(weather) {
-
   const tempMax = safe(weather.temperature_2m_max);
   const tempMin = safe(weather.temperature_2m_min);
   const tempAvg = (tempMax + tempMin) / 2;
-
   const humidity = safe(weather.relative_humidity_2m_mean, 50);
   const wind = safe(weather.wind_speed_10m_max);
-  const precipitation = safe(weather.precipitation_sum);
+  const rain = safe(weather.precipitation_sum);
   const uv = safe(weather.uv_index_max);
-
+  
   const pressureToday = safe(weather.pressure_msl_mean, 1010);
   const pressureYesterday = safe(weather.pressure_msl_mean_prev, pressureToday);
-
   const pressureChange = Math.abs(pressureToday - pressureYesterday);
 
-  /* ---------------- MOSQUITO ACTIVITY ---------------- */
+  /* ---------------- MOSQUITO ACTIVITY ---------------- 
+     Logic: Peak at 27°C, crashes > 35°C. High humidity essential.
+  */
+  let mTemp = tempAvg > 20 && tempAvg < 33 ? 100 : (tempAvg > 33 ? 40 : 20);
+  let mHum = humidity > 60 ? 100 : (humidity > 40 ? 50 : 10);
+  let mRain = rain > 0.5 ? 80 : 20; // Rain today predicts breeding in coming days
+  const mosquitoScore = clamp((mTemp * 0.5) + (mHum * 0.3) + (mRain * 0.2) - (wind > 15 ? 20 : 0));
 
-  let tempScore;
+  /* ---------------- HOUSEFLY ACTIVITY ---------------- 
+     Logic: Metabolism peaks at 33°C. High wind prevents landing.
+  */
+  let fTemp = tempAvg > 28 && tempAvg < 36 ? 100 : 50;
+  let fWind = wind > 20 ? -30 : 0;
+  const flyScore = clamp((fTemp * 0.7) + (humidity * 0.3) + fWind);
 
-  if (tempAvg < 10) tempScore = 0;
-  else if (tempAvg < 18) tempScore = 25;
-  else if (tempAvg < 25) tempScore = 70;
-  else if (tempAvg < 32) tempScore = 100;
-  else if (tempAvg < 38) tempScore = 75;
-  else tempScore = 40;
+  /* ---------------- SCORPION & SNAKE ---------------- 
+     Logic: Active on warm nights (TempMin > 22°C). 
+     Rain "flushes" them out. Low wind preferred.
+  */
+  let sNightTemp = tempMin > 20 ? 80 : 30;
+  let sRain = rain > 2 ? 100 : 20; // Rain is a huge displacement trigger
+  let sWind = wind > 15 ? -20 : 0;
+  const wildlifeScore = clamp((sNightTemp * 0.5) + (sRain * 0.4) + 10 + sWind);
 
-  const humidityScore = clamp((humidity - 40) * 1.8);
+  /* ---------------- MIGRAINE RISK ---------------- 
+     Logic: Rapid pressure shifts + extreme heat dehydration.
+  */
+  let pScore = pressureChange > 4 ? 100 : (pressureChange > 2 ? 60 : 20);
+  let heatTrigger = tempMax > 38 ? 40 : 0;
+  const migraineScore = clamp((pScore * 0.7) + heatTrigger + (humidity < 25 ? 20 : 0));
 
-  let rainScore = 10;
-  if (precipitation > 6) rainScore = 90;
-  else if (precipitation > 2) rainScore = 50;
+  /* ---------------- FLU / RESPIRATORY ---------------- 
+     Logic: Viruses thrive in DRY air (Low AH). Dust (Wind + Low Humidity).
+  */
+  let fHum = humidity < 30 ? 100 : (humidity < 50 ? 50 : 10);
+  let fDust = (wind > 20 && humidity < 30) ? 30 : 0;
+  const fluScore = clamp((fHum * 0.8) + fDust + (tempMin < 15 ? 20 : 0));
 
-  let windPenalty = 0;
-  if (wind > 30) windPenalty = -40;
-  else if (wind > 18) windPenalty = -20;
+  /* ---------------- HEAT ILLNESS ---------------- 
+     Logic: High Temp + High Humidity (Wet Bulb effect).
+  */
+  const heatIndexScore = clamp(((tempMax - 30) * 4) + (humidity * 0.5));
 
-  const mosquitoScore = clamp(
-    0.45 * tempScore +
-    0.35 * humidityScore +
-    0.15 * rainScore +
-    windPenalty
-  );
-
-  /* ---------------- HOUSEFLY ACTIVITY ---------------- */
-
-  if (tempAvg < 10) tempScore = 0;
-  else if (tempAvg < 18) tempScore = 40;
-  else if (tempAvg < 25) tempScore = 80;
-  else if (tempAvg < 32) tempScore = 100;
-  else if (tempAvg < 38) tempScore = 70;
-  else tempScore = 40;
-
-  let flyHumidityScore;
-
-  if (humidity < 30) flyHumidityScore = 30;
-  else if (humidity < 60) flyHumidityScore = 100;
-  else if (humidity < 80) flyHumidityScore = 70;
-  else flyHumidityScore = 50;
-
-  let rainPenalty = precipitation > 4 ? -25 : 0;
-
-  windPenalty = 0;
-  if (wind > 30) windPenalty = -30;
-  else if (wind > 18) windPenalty = -10;
-
-  const flyScore = clamp(
-    0.55 * tempScore +
-    0.35 * flyHumidityScore +
-    rainPenalty +
-    windPenalty
-  );
-
-  /* ---------------- MIGRAINE RISK ---------------- */
-
-  let pressureScore;
-
-  if (pressureChange < 2) pressureScore = 10;
-  else if (pressureChange < 4) pressureScore = 40;
-  else if (pressureChange < 6) pressureScore = 75;
-  else pressureScore = 100;
-
-  const migraineHumidityScore = clamp((humidity - 50) * 1.5);
-
-  let heatScore;
-
-  if (tempMax < 20) heatScore = 20;
-  else if (tempMax < 28) heatScore = 40;
-  else if (tempMax < 34) heatScore = 70;
-  else heatScore = 90;
-
-  let windScore = wind > 35 ? 60 : 20;
-
-  const migraineScore = clamp(
-    0.45 * pressureScore +
-    0.25 * migraineHumidityScore +
-    0.2 * heatScore +
-    0.1 * windScore
-  );
-
-  /* ---------------- FLU RISK ---------------- */
-
-  let fluTempScore;
-
-  if (tempMin < 0) fluTempScore = 50;
-  else if (tempMin < 10) fluTempScore = 100;
-  else if (tempMin < 15) fluTempScore = 80;
-  else if (tempMin < 20) fluTempScore = 50;
-  else if (tempMin < 25) fluTempScore = 20;
-  else fluTempScore = 5;
-
-  let fluHumidityScore;
-
-  if (humidity < 30) fluHumidityScore = 100;
-  else if (humidity < 40) fluHumidityScore = 80;
-  else if (humidity < 60) fluHumidityScore = 50;
-  else if (humidity < 80) fluHumidityScore = 25;
-  else fluHumidityScore = 10;
-
-  const fluScore = clamp(
-    0.65 * fluTempScore +
-    0.35 * fluHumidityScore
-  );
-
-  /* ---------------- INFECTION SPREAD ---------------- */
-
-  let infectionTempScore;
-
-  if (tempAvg < 5) infectionTempScore = 20;
-  else if (tempAvg < 15) infectionTempScore = 70;
-  else if (tempAvg < 25) infectionTempScore = 100;
-  else if (tempAvg < 35) infectionTempScore = 60;
-  else infectionTempScore = 30;
-
-  let infectionHumidityScore;
-
-  if (humidity < 30) infectionHumidityScore = 30;
-  else if (humidity < 60) infectionHumidityScore = 70;
-  else if (humidity < 80) infectionHumidityScore = 100;
-  else infectionHumidityScore = 90;
-
-  let uvPenalty = 0;
-  if (uv > 9) uvPenalty = -40;
-  else if (uv > 6) uvPenalty = -20;
-
-  const infectionScore = clamp(
-    0.5 * infectionHumidityScore +
-    0.4 * infectionTempScore +
-    uvPenalty
-  );
-
-  /* ---------------- HEAT ILLNESS ---------------- */
-
-  const heatIndexScore = clamp(
-    (tempMax * 2) +
-    (humidity * 0.4)
-  );
-
-  /* ---------------- DEHYDRATION ---------------- */
-
-  const dehydrationScore = clamp(
-    (tempMax * 2.2) +
-    (wind * 1.8) -
-    (humidity * 0.25)
-  );
+  /* ---------------- DEHYDRATION ---------------- 
+     Logic: Aridity + Wind (evaporative cooling takes water from skin).
+  */
+  const dehydrationScore = clamp((tempMax * 1.5) + (wind * 0.5) - (humidity * 0.2));
 
   return {
     mosquito: riskLevel(mosquitoScore),
     houseflies: riskLevel(flyScore),
+    wildlife: riskLevel(wildlifeScore), // Scorpions and Snakes
     migraine: riskLevel(migraineScore),
     flu: riskLevel(fluScore),
-    infection: riskLevel(infectionScore),
     heatIllness: riskLevel(heatIndexScore),
     dehydration: riskLevel(dehydrationScore),
 
     scores: {
-      mosquitoScore,
-      flyScore,
-      migraineScore,
-      fluScore,
-      infectionScore,
-      heatIndexScore,
-      dehydrationScore
+      mosquitoScore: Math.round(mosquitoScore),
+      flyScore: Math.round(flyScore),
+      wildlifeScore: Math.round(wildlifeScore),
+      migraineScore: Math.round(migraineScore),
+      fluScore: Math.round(fluScore),
+      heatIndexScore: Math.round(heatIndexScore),
+      dehydrationScore: Math.round(dehydrationScore)
     }
   };
-
 };
