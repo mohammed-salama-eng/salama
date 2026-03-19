@@ -246,8 +246,8 @@ module.exports = function processWeatherData(data, locationName) {
         location: locationName,
         start: time[tracker.start],
         end: time[endIndex],
-        startTimestamp: Date.parse(time[tracker.start]),
-        endTimestamp: Date.parse(time[endIndex]),
+        startTimestamp: new Date(time[tracker.start] + ":00+02:00").getTime,
+        endTimestamp: new Date(time[endIndex] + ":00+02:00").getTime,
         urgency: severity,
         showMore: "alerts.showMore"
       });
