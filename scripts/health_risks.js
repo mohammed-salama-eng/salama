@@ -7,90 +7,98 @@ function safe(v, fallback = 0) {
   return (v === undefined || v === null || isNaN(v)) ? fallback : v;
 }
 
+// Higher resolution risk levels
 function riskLevel(score) {
-  if (score < 35) return "low";
-  if (score < 65) return "moderate";
-  return "high";
+  if (score < 30) return "low";
+  if (score < 60) return "moderate";
+  if (score < 85) return "high";
+  return "extreme";
 }
 
-module.exports = function calculateHealthRisks(weather) {
-  const tempMax = safe(weather.temperature_2m_max);
-  const tempMin = safe(weather.temperature_2m_min);
-  const tempAvg = (tempMax + tempMin) / 2;
-  const humidity = safe(weather.relative_humidity_2m_mean, 50);
-  const wind = safe(weather.wind_speed_10m_max);
+module.exports = function calculateEnhancedHealthRisks(weather) {
+  // --- Input Data Extraction ---
+  const tMax = safe(weather.temperature_2m_max);
+  const tMin = safe(weather.temperature_2m_min);
+  const tAvg = safe(weather.temperature_2m_mean, (tMax + tMin) / 2);
+  const rh = safe(weather.relative_humidity_2m_mean, 50);
   const rain = safe(weather.precipitation_sum);
+  const wind = safe(weather.wind_speed_10m_max);
   const uv = safe(weather.uv_index_max);
-  
-  const pressureToday = safe(weather.pressure_msl_mean, 1010);
-  const pressureYesterday = safe(weather.pressure_msl_mean_prev, pressureToday);
-  const pressureChange = Math.abs(pressureToday - pressureYesterday);
+  const solar = safe(weather.shortwave_radiation_sum); // MJ/m²
 
-  /* ---------------- MOSQUITO ACTIVITY ---------------- 
-     Logic: Peak at 27°C, crashes > 35°C. High humidity essential.
-  */
-  let mTemp = tempAvg > 20 && tempAvg < 33 ? 100 : (tempAvg > 33 ? 40 : 20);
-  let mHum = humidity > 60 ? 100 : (humidity > 40 ? 50 : 10);
-  let mRain = rain > 0.5 ? 80 : 20; // Rain today predicts breeding in coming days
-  const mosquitoScore = clamp((mTemp * 0.5) + (mHum * 0.3) + (mRain * 0.2) - (wind > 15 ? 20 : 0));
+  const pToday = safe(weather.pressure_msl_mean, 1010);
+  const pPrev = safe(weather.pressure_msl_mean_prev, pToday);
+  const pDelta = Math.abs(pToday - pPrev);
 
-  /* ---------------- HOUSEFLY ACTIVITY ---------------- 
-     Logic: Metabolism peaks at 33°C. High wind prevents landing.
-  */
-  let fTemp = tempAvg > 28 && tempAvg < 36 ? 100 : 50;
-  let fWind = wind > 20 ? -30 : 0;
-  const flyScore = clamp((fTemp * 0.7) + (humidity * 0.3) + fWind);
+  // --- 1. MOSQUITO ACTIVITY (Biological Curve) ---
+  // Peak activity is at 27°C. Activity drops off sharply above 38°C (desiccation risk).
+  const mTempFactor = Math.exp(-Math.pow(tAvg - 27, 2) / 50); 
+  const mHumFactor = rh / 100;
+  const mRainFactor = rain > 0.2 ? 0.3 : 0; // Standing water potential
+  const mosquitoScore = clamp(((mTempFactor * 0.6) + (mHumFactor * 0.3) + mRainFactor) * 100 - (wind > 15 ? 20 : 0));
 
-  /* ---------------- SCORPION & SNAKE ---------------- 
-     Logic: Active on warm nights (TempMin > 22°C). 
-     Rain "flushes" them out. Low wind preferred.
-  */
-  let sNightTemp = tempMin > 20 ? 80 : 30;
-  let sRain = rain > 2 ? 100 : 20; // Rain is a huge displacement trigger
-  let sWind = wind > 15 ? -20 : 0;
-  const wildlifeScore = clamp((sNightTemp * 0.5) + (sRain * 0.4) + 10 + sWind);
+  // --- 2. HOUSEFLY ACTIVITY ---
+  // Flies are most active in high heat (33°C) but hate high winds.
+  const fTempFactor = Math.exp(-Math.pow(tAvg - 33, 2) / 60);
+  const flyScore = clamp(((fTempFactor * 0.7) + (rh > 40 ? 0.2 : 0.1)) * 100 - (wind > 20 ? 30 : 0));
 
-  /* ---------------- MIGRAINE RISK ---------------- 
-     Logic: Rapid pressure shifts + extreme heat dehydration.
-  */
-  let pScore = pressureChange > 4 ? 100 : (pressureChange > 2 ? 60 : 20);
-  let heatTrigger = tempMax > 38 ? 40 : 0;
-  const migraineScore = clamp((pScore * 0.7) + heatTrigger + (humidity < 25 ? 20 : 0));
+  // --- 3. SCORPION ACTIVITY (Night-time Floor) ---
+  // Scorpions in Sudan are nocturnal. They emerge when tMin is high and ground is dry.
+  let scorpionScore = 0;
+  if (tMin > 22) scorpionScore += 50;
+  if (tMin > 28) scorpionScore += 30; // Very high nocturnal activity
+  if (rh < 30) scorpionScore += 20; // Scorpions prefer dry conditions for hunting
+  if (rain > 5) scorpionScore -= 40; // Heavy rain keeps them in burrows (unlike snakes)
+  scorpionScore = clamp(scorpionScore - (wind > 20 ? 15 : 0));
 
-  /* ---------------- FLU / RESPIRATORY ---------------- 
-     Logic: Viruses thrive in DRY air (Low AH). Dust (Wind + Low Humidity).
-  */
-  let fHum = humidity < 30 ? 100 : (humidity < 50 ? 50 : 10);
-  let fDust = (wind > 20 && humidity < 30) ? 30 : 0;
-  const fluScore = clamp((fHum * 0.8) + fDust + (tempMin < 15 ? 20 : 0));
+  // --- 4. SNAKE ACTIVITY (Displacement Risk) ---
+  // Snakes are highly active post-rain (flushing) and in moderate "Goldilocks" temps.
+  let snakeScore = 0;
+  const sTempFactor = Math.exp(-Math.pow(tAvg - 30, 2) / 80);
+  snakeScore += sTempFactor * 60;
+  if (rain > 2) snakeScore += 40; // Flood/Rain displacement is the #1 risk for stings
+  if (tMin > 24) snakeScore += 10;
+  snakeScore = clamp(snakeScore - (wind > 25 ? 20 : 0));
 
-  /* ---------------- HEAT ILLNESS ---------------- 
-     Logic: High Temp + High Humidity (Wet Bulb effect).
-  */
-  const heatIndexScore = clamp(((tempMax - 30) * 4) + (humidity * 0.5));
+  // --- 5. MIGRAINE RISK (Atmospheric Stress) ---
+  // Driven by Barometric shifts and Dehydration/Heat triggers.
+  const pScore = pDelta > 4 ? 70 : (pDelta * 15);
+  const mHeatScore = tMax > 39 ? 30 : 0;
+  const migraineScore = clamp(pScore + mHeatScore + (rh < 25 ? 20 : 0));
 
-  /* ---------------- DEHYDRATION ---------------- 
-     Logic: Aridity + Wind (evaporative cooling takes water from skin).
-  */
-  const dehydrationScore = clamp((tempMax * 1.5) + (wind * 0.5) - (humidity * 0.2));
+  // --- 6. FLU & RESPIRATORY (The Aridity/Dust Factor) ---
+  // In Sudan, "Flu" season is often "Dust" season. Low RH cracks membranes.
+  const aridityFactor = clamp((100 - rh) * 0.7);
+  const dustFactor = (wind > 25 && rh < 30) ? 30 : 0; // Haboob signature
+  const fluScore = clamp(aridityFactor + dustFactor + (tMin < 16 ? 20 : 0));
+
+  // --- 7. HEAT ILLNESS (Wet Bulb Proxy) ---
+  const heatIndex = (tMax * 0.8) + (rh * 0.2); // Simplified Heat Index proxy
+  const heatScore = clamp((heatIndex - 25) * 4);
+
+  // --- 8. DEHYDRATION (Evaporative Loss) ---
+  // High temp + High wind + Low RH = Rapid water loss.
+  const dehydrationScore = clamp((tMax * 1.2) + (wind * 0.4) - (rh * 0.2) + (solar / 2 || 0));
 
   return {
     mosquito: riskLevel(mosquitoScore),
     houseflies: riskLevel(flyScore),
-    wildlife: riskLevel(wildlifeScore), // Scorpions and Snakes
+    scorpion: riskLevel(scorpionScore),
+    snake: riskLevel(snakeScore),
     migraine: riskLevel(migraineScore),
     flu: riskLevel(fluScore),
-    heatIllness: riskLevel(heatIndexScore),
+    heatIllness: riskLevel(heatScore),
     dehydration: riskLevel(dehydrationScore),
 
     scores: {
-      mosquitoScore: Math.round(mosquitoScore),
-      flyScore: Math.round(flyScore),
-      wildlifeScore: Math.round(wildlifeScore),
-      migraineScore: Math.round(migraineScore),
-      fluScore: Math.round(fluScore),
-      heatIndexScore: Math.round(heatIndexScore),
-      dehydrationScore: Math.round(dehydrationScore)
+      mosquito: Math.round(mosquitoScore),
+      houseflies: Math.round(flyScore),
+      scorpion: Math.round(scorpionScore),
+      snake: Math.round(snakeScore),
+      migraine: Math.round(migraineScore),
+      flu: Math.round(fluScore),
+      heatIllness: Math.round(heatScore),
+      dehydration: Math.round(dehydrationScore)
     }
   };
 };
