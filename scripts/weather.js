@@ -10,7 +10,7 @@ const formatDateEn = (date, lang) => {
 
   // TIME
   let time;
-  const hour = Number(date.getHours());
+  const hour = Number(date.getHours()) + 1;
 
   if (hour >= 0 && hour < 5) time = "early morning";
   else if (hour >= 5 && hour < 12) time = "morning";
@@ -49,7 +49,7 @@ const formatDateAr = (date, lang) => {
 
   // TIME
   let time;
-  const hour = Number(date.getHours());
+  const hour = Number(date.getHours()) + 1;
 
   if (hour >= 0 && hour < 5) time = "فجر";
   else if (hour >= 5 && hour < 12) time = "صباح";
@@ -127,7 +127,7 @@ const ALERT_CONFIG = {
     articleUrl: "/articles/rains",
     issuer: "alerts.rainAlert.issuer",
     key: "alerts.rainAlert",
-    medium: 2,
+    medium: 1,
     high: 4,
     minDuration: 2,
     comparator: (v, t) => v >= t
@@ -182,7 +182,7 @@ const ALERT_CONFIG = {
     issuer: "alerts.strongWind.issuer",
     key: "alerts.strongWind",
     threshold: 6.5,
-    gustThreshold: 12,
+    gustThreshold: 15,
     minDuration: 2
   }
 };
@@ -246,6 +246,8 @@ module.exports = function processWeatherData(data, locationName) {
         location: locationName,
         start: time[tracker.start],
         end: time[endIndex],
+        startTimestamp: new Date(time[tracker.start]),
+        endTimestamp: new Date(time[endIndex]),
         urgency: severity,
         showMore: "alerts.showMore"
       });
