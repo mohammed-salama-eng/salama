@@ -74,6 +74,7 @@ async function run() {
         const healthRisksId = `${locality}_health_risks`;
        await db.collection("health").doc(healthRisksId).set({
                location: locality,
+               weather: healthData,
                risks: healthRisks,
                createdAt: Date.now(),
                expiresAt: Date.now() + 24 * 60 * 60 * 1000
