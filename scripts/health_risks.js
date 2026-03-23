@@ -11,7 +11,7 @@ function safe(v, fallback = 0) {
 function riskLevel(score) {
   if (score < 30) return "low";
   if (score < 60) return "moderate";
-  if (score =< 100) return "high";
+  if (score <= 100) return "high";
   return "unkown";
 }
 
