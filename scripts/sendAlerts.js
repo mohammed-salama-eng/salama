@@ -19,8 +19,8 @@ async function processLocation(locationObj) {
   const latitude = centroid.lat;
   const longitude = centroid.lng;
 
-  const locality = `${locality_en}_${state_en}`;
-  const locationName = `${locality_en.replace("_", " ")} ${state_en}`;
+  const locality = `${locality_en}_${state_en}`.toLowerCase().trim().replaceAll(" ", "_");
+  const locationName = `${locality_en}_${state_en}`.toLowerCase().trim().replaceAll(" ", "_");
 
   try {
     const weatherResponse = await fetch(
