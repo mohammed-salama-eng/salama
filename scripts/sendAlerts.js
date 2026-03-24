@@ -38,6 +38,14 @@ async function run() {
     const healthRisks = calculateHealthRisks(healthData);
     
 
+    if (!weatherAlerts) {
+       const alertId = `${locality}_noAlert`;
+        await db.collection("alerts").doc(alertId).set({
+               location: locality,
+            alertType: "noAlert"
+           }, { merge: true });
+    }
+    
     for (const alert of weatherAlerts) {
         // Push notifications
         await messaging.send({
