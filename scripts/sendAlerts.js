@@ -28,7 +28,7 @@ async function run() {
 
     const healthResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-    `&daily=time,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,shortwave_radiation_sum,relative_humidity_2m_mean,pressure_msl_mean,weather_code,apparent_temperature_mean` +
+    `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,shortwave_radiation_sum,relative_humidity_2m_mean,pressure_msl_mean,weather_code,apparent_temperature_mean` +
     `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=3`
         );
 
