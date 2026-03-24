@@ -14,13 +14,13 @@ const messaging = admin.messaging();
 const db = admin.firestore();
 
 async function processLocation(locationObj) {
-  const { location_en, state, centroid } = locationObj;
+  const { locality_en, state, centroid } = locationObj;
 
   const latitude = centroid.lat;
   const longitude = centroid.lng;
 
-  const locality = `${location_en}_${state}`;
-  const locationName = `${location_en.replace("_", " ")} ${state}`;
+  const locality = `${locality_en}_${state}`;
+  const locationName = `${locality_en.replace("_", " ")} ${state}`;
 
   try {
     const weatherResponse = await fetch(
