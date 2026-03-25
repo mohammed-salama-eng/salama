@@ -74,7 +74,7 @@ async function processLocation(locationObj) {
         topic: `${locality}_ar`,
         notification: alert.notificationAr,
         android: {
-          ttl: "86400s"
+          ttl: "86400s",
           priority: "high"
         },
         apns: {
