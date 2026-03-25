@@ -57,12 +57,30 @@ async function processLocation(locationObj) {
       // 🔔 Notifications
       await messaging.send({
         topic: `${locality}_en`,
-        notification: alert.notification
+        notification: alert.notification,
+        android: {
+          ttl: "86400s"
+        },
+        apns: {
+            headers: {
+                apns-expiration: "1711364400"
+            }
+        }
+
       });
 
       await messaging.send({
         topic: `${locality}_ar`,
-        notification: alert.notificationAr
+        notification: alert.notificationAr,
+        android: {
+          ttl: "86400s"
+        },
+        apns: {
+            headers: {
+                apns-expiration: "1711364400"
+            }
+        }
+
       });
 
       // 💾 Store alert
