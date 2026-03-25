@@ -60,7 +60,8 @@ async function processLocation(locationObj) {
         notification: alert.notification,
         android: {
           ttl: "86400s",
-          priority: "high"
+          priority: "high",
+          collapseKey: "weather_alert"
         },
         apns: {
             headers: {
@@ -75,7 +76,8 @@ async function processLocation(locationObj) {
         notification: alert.notificationAr,
         android: {
           ttl: "86400s",
-          priority: "high"
+          priority: "high",
+          collapseKey: "weather_alert"
         },
         apns: {
             headers: {
