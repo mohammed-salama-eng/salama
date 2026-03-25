@@ -130,7 +130,7 @@ async function processLocation(locationObj) {
     
     console.log(`✅ Processed: ${locality}`);
     // E. Throttle: Wait 250ms before next locality 
-    await delay(250);
+    await delay(1000);
 
   } catch (err) {
     console.error(`❌ Error processing ${locality}`, err);
