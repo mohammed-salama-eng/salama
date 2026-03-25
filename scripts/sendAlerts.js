@@ -13,6 +13,9 @@ admin.initializeApp({
 const messaging = admin.messaging();
 const db = admin.firestore();
 
+// Helper to add small delay to respect API rate limits
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function processLocation(locationObj) {
   const { locality_en, state_en, centroid } = locationObj;
 
@@ -35,6 +38,10 @@ async function processLocation(locationObj) {
       `&timezone=Africa/Khartoum&wind_speed_unit=ms&forecast_days=3`
     );
 
+  if (!weatherResponse.ok || !healthResponse.ok) {
+    throw new Error(`API error for ${locality}: ${weatherResponse.status}`);
+  }
+    
     const weatherData = await weatherResponse.json();
     const healthData = await healthResponse.json();
 
@@ -48,10 +55,9 @@ async function processLocation(locationObj) {
       await db.collection("alerts").doc(alertId).set({
         location: locality,
         alertType: "noAlert",
-        createdAt: Date.now()
+        updatedAt: Date.now()
       }, { merge: true });
-    }
-
+    } else {
     for (const alert of weatherAlerts) {
 
       // 🔔 Notifications
@@ -107,6 +113,7 @@ async function processLocation(locationObj) {
         createdAt: Date.now()
       }, { merge: true });
     }
+    }
 
     // --- HEALTH ---
     if (healthRisks) {
@@ -120,11 +127,14 @@ async function processLocation(locationObj) {
         expiresAt: Date.now() + 24 * 60 * 60 * 1000
       }, { merge: true });
     }
-
+    
     console.log(`✅ Processed: ${locality}`);
+    // E. Throttle: Wait 250ms before next locality 
+    await delay(250);
 
   } catch (err) {
     console.error(`❌ Error processing ${locality}`, err);
+    continue
   }
 }
 
@@ -132,6 +142,7 @@ async function run() {
   for (const location of locations) {
     await processLocation(location);
   }
+  console.log("All localities processed.");
 }
 
 run();
