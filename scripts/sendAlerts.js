@@ -134,7 +134,6 @@ async function processLocation(locationObj) {
 
   } catch (err) {
     console.error(`❌ Error processing ${locality}`, err);
-    continue
   }
 }
 
