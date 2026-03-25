@@ -65,13 +65,13 @@ async function processLocation(locationObj) {
         topic: `${locality}_en`,
         notification: alert.notification,
         android: {
-          ttl: "86400s",
+          ttl: 24 * 60 * 60 * 1000,
           priority: "high",
           collapseKey: "weather_alert"
         },
         apns: {
             headers: {
-                "apns-expiration": Math.floor(Date.now() / 1000) + 84600,
+                "apns-expiration": Math.floor(Date.now() / 1000 + 84600).toString(),
             }
         }
 
@@ -81,13 +81,13 @@ async function processLocation(locationObj) {
         topic: `${locality}_ar`,
         notification: alert.notificationAr,
         android: {
-          ttl: "86400s",
+          ttl: 24 * 60 * 60 * 1000,
           priority: "high",
           collapseKey: "weather_alert"
         },
         apns: {
             headers: {
-                "apns-expiration": Math.floor(Date.now() / 1000) + 84600,
+                "apns-expiration": Math.floor(Date.now() / 1000 + 84600).toString(),
             }
         }
 
