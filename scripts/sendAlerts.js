@@ -75,7 +75,7 @@ async function processLocation(locationObj) {
     const healthRisks = calculateHealthRisks(healthData);
 
     // --- ALERTS ---
-    if (!weatherAlerts || weatherAlerts.length === 0) {
+    if (true) {
       const alertId = `${locality}_noAlert`;
       await db.collection("alerts").doc(alertId).set({
         location: locality,
@@ -118,7 +118,7 @@ async function processLocation(locationObj) {
         await db.collection("alerts").doc(alertId).set({
           location: locality,
           ...alert, // Spread alert properties
-          createdAt: Date.now()
+          updatedAt: Date.now()
         }, { merge: true });
       }
     }
@@ -138,7 +138,7 @@ async function processLocation(locationObj) {
     console.log(`✅ Processed: ${locality}`);
     
     // Constant delay to prevent burst limit issues
-    await delay(1000);
+    await delay(250);
 
   } catch (err) {
     console.error(`❌ Permanent Failure for ${locality}:`, err.message);
