@@ -75,7 +75,7 @@ async function processLocation(locationObj) {
     const healthRisks = calculateHealthRisks(healthData);
 
     // --- ALERTS ---
-    if (true) {
+    if (!weatherAlerts || weatherAlerts.length === 0) {
       const alertId = `${locality}_noAlert`;
       await db.collection("alerts").doc(alertId).set({
         location: locality,
