@@ -2,7 +2,7 @@ name: Weather Alerts
 
 on: 
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "13 7 * * *"
   workflow_dispatch:
 
 jobs:
